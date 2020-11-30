@@ -1,0 +1,20 @@
+spring:
+   application:
+      name: Api-Gateway
+   config:
+      import: configserver:http://localhost:8181
+   cloud:
+      gateway:
+         discovery:
+            locator:
+               enabled: true
+         routes:
+          - id: Product-Catalog-Service
+            #uri: lb://PRODUCT-CATALOG-SERVICE # Currently not working properly
+            uri: http://localhost:9002
+            predicates:
+            - Path=/api/inventory/**
+            filters:
+            - RewritePath=/api/inventory/(?<segment>/?.*), /inventory/$\{segment}
+            
+         
