@@ -55,6 +55,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>Config-Server</finalName>
 	</build>
 
 	<repositories>

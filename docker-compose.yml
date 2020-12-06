@@ -1,0 +1,129 @@
+version: "3"
+
+services:
+
+  config-server:
+    container_name: configserver
+    image: config-server:1.0
+    build:
+      context: ./Config-Server
+    ports:
+      - "8181:8181"
+    networks:
+      - service-network
+
+  discovery-server:
+    container_name: discovery-server
+    image: discovery-server:1.0
+    build:
+      context: ./Discovery-Server
+    ports:
+      - "8761:8761"
+    networks:
+      - service-network
+    depends_on:
+      - config-server
+    restart: on-failure
+
+
+  product-service:
+    container_name: product-service
+    image: product-service:1.0
+    build:
+      context: ./Product-Service
+    ports:
+      - "9000:9000"
+    networks:
+      - service-network
+      - product-data
+    depends_on:
+      - config-server
+      - discovery-server
+      - product-db
+    restart: on-failure
+
+  stock-service:
+    container_name: stock-service
+    image: stock-service:1.0
+    build:
+      context: ./Stock-Service
+    ports:
+      - "9001:9001"
+    networks:
+      - service-network
+      - stock-data
+    depends_on:
+      - config-server
+      - discovery-server
+      - stock-db
+    restart: on-failure
+
+  product-catalog-service:
+    container_name: product-catalog-service
+    image: product-catalog-service:1.0
+    build:
+      context: ./Product-Catalog-Service
+    ports:
+      - "9002:9002"
+    networks:
+      - service-network
+    depends_on:
+      - config-server
+      - discovery-server
+    restart: on-failure
+
+
+  api-gateway:
+    container_name: api-gateway
+    image: api-gateway:1.0
+    build:
+      context: ./Api-Gateway
+    ports:
+      - "9020:9020"
+    networks:
+      - service-network
+    depends_on:
+      - config-server
+      - discovery-server
+    restart: on-failure
+
+  product-db:
+    container_name: product-db
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: "products"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - "3307:3306"
+    volumes:
+      - product-db:/var/lib/mysql
+    networks:
+      - product-data
+
+  stock-db:
+    container_name: stock-db
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: "stock"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - "3308:3306"
+    volumes:
+      - stock-db:/var/lib/mysql
+    networks:
+      - stock-data
+
+
+
+networks:
+  service-network:
+  product-data:
+  stock-data:
+
+volumes:
+  product-db:
+  stock-db:

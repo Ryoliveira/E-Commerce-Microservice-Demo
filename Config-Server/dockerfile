@@ -1,0 +1,11 @@
+FROM maven:3.6.3-openjdk-8 AS MAVEN_BUILD
+
+COPY ./ ./
+
+RUN mvn clean package
+
+FROM openjdk:8
+EXPOSE 8181
+
+COPY --from=MAVEN_BUILD /target/Config-Server.jar Config-Server.jar
+ENTRYPOINT ["java", "-jar", "Config-Server.jar"]

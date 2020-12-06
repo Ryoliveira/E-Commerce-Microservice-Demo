@@ -2,7 +2,7 @@ spring:
    application:
       name: Api-Gateway
    config:
-      import: configserver:http://localhost:8181
+      import: configserver:http://configserver:8181
    cloud:
       gateway:
          discovery:
@@ -11,10 +11,18 @@ spring:
          routes:
           - id: Product-Catalog-Service
             #uri: lb://PRODUCT-CATALOG-SERVICE # Currently not working properly
-            uri: http://localhost:9002
+            uri: http://product-catalog-service:9002
             predicates:
             - Path=/api/inventory/**
             filters:
             - RewritePath=/api/inventory/(?<segment>/?.*), /inventory/$\{segment}
-            
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-server:8761/eureka
+    register-with-eureka: false
+    fetch-registry: true
          
+server:
+  port: 9020

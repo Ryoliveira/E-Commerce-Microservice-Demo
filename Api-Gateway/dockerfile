@@ -1,0 +1,11 @@
+FROM maven:3.6.3-openjdk-8 AS MAVEN_BUILD
+
+COPY ./ ./
+
+RUN mvn clean package
+
+FROM openjdk:8
+EXPOSE 9020
+
+COPY --from=MAVEN_BUILD /target/Api-Gateway.jar Api-Gateway.jar
+ENTRYPOINT ["java", "-jar", "Api-Gateway.jar"]

@@ -87,6 +87,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>Stock-Service</finalName>
 	</build>
 
 	<repositories>
