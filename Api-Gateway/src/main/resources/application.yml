@@ -1,20 +1,30 @@
 spring:
-   application:
-      name: Api-Gateway
-   config:
-      import: configserver:http://configserver:8181
-   cloud:
-      gateway:
-         discovery:
-            locator:
-               enabled: true
-         routes:
-          - id: Product-Catalog-Service
-            #uri: lb://PRODUCT-CATALOG-SERVICE # Currently not working properly
-            uri: http://product-catalog-service:9002
-            predicates:
+  application:
+    name: Api-Gateway
+  config:
+    import: configserver:http://configserver:8181
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedHeaders: '*'
+            allowedOrigins: 'http://localhost:4200'
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: Product-Catalog-Service
+          #uri: lb://PRODUCT-CATALOG-SERVICE # Currently not working properly
+          uri: http://product-catalog-service:9002
+          predicates:
             - Path=/api/inventory/**
-            filters:
+          filters:
             - RewritePath=/api/inventory/(?<segment>/?.*), /inventory/$\{segment}
 
 eureka:
@@ -23,6 +33,6 @@ eureka:
       defaultZone: http://discovery-server:8761/eureka
     register-with-eureka: false
     fetch-registry: true
-         
+
 server:
   port: 9020

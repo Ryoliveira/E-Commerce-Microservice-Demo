@@ -1,0 +1,32 @@
+<h1>Products</h1>
+<table class="table table-dark table-striped">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let productInfo of productInfoList">
+            <td><img src="{{ productInfo.product.img }}" height="50"></td>
+            <td>{{ productInfo.product.name }}</td>
+            <td>{{ productInfo.product.description }}</td>
+            <td>{{ productInfo.product.price | currency: 'USD' }}</td>
+            <td>{{ productInfo.stock.stock }}</td>
+            <td>
+                <button class="btn btn-primary" (click)="showProduct(productInfo.product.id)">View</button>
+                &nbsp;
+                <button class="btn btn-info" (click)="updateProduct(productInfo.product.id)">Update</button>
+                &nbsp;
+                <button class="btn btn-danger" (click)="deleteProduct(productInfo.product.id);">Delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div>
+    <a routerLink="/add-product" class="btn btn-primary">Add Product</a>
+</div>

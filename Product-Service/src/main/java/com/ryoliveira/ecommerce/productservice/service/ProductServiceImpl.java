@@ -33,10 +33,18 @@ public class ProductServiceImpl implements ProductService {
 		
 		try {
 			prod = optional.orElseThrow(() -> new NoSuchElementException("No product with id: " + updatedProduct.getId()));
-			prod.setName(updatedProduct.getName());
-			prod.setDescription(updatedProduct.getDescription());
-			prod.setImg(updatedProduct.getImg());
-			prod.setPrice(updatedProduct.getPrice());
+			if(updatedProduct.getName() != null) {
+				prod.setName(updatedProduct.getName());
+			}
+			if(updatedProduct.getDescription() != null) {
+				prod.setDescription(updatedProduct.getDescription());
+			}
+			if(updatedProduct.getImg() != null) {
+				prod.setImg(updatedProduct.getImg());
+			}
+			if(updatedProduct.getPrice() != null) {
+				prod.setPrice(updatedProduct.getPrice());
+			}
 			prodRepo.save(prod);
 			LOGGER.info("Updated Product: " + prod.toString());
 		}catch(NoSuchElementException e) {

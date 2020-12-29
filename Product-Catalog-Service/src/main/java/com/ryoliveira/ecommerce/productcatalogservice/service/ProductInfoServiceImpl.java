@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.ryoliveira.ecommerce.productcatalogservice.model.Product;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
+import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Stock;
 
 @Service
@@ -52,7 +53,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	}
 
 	@Override
-	public List<ProductInfo> getAllProducts() {
+	public ProductInfoList getAllProducts() {
 
 		List<ProductInfo> productInfoList = new ArrayList<>();
 
@@ -67,7 +68,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			productInfoList.add(new ProductInfo(product, stock));
 		});
 
-		return productInfoList;
+		return new ProductInfoList(productInfoList);
 	}
 
 }

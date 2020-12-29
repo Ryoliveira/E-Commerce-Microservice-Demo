@@ -1,0 +1,59 @@
+<div class="container-fluid">
+    <form [formGroup]="productInfoFormGroup" (ngSubmit)=submitProduct()>
+        <!--Product Info Form Group-->
+        <div formGroupName="product" class="form-area">
+            <h3>Product</h3>
+            <input formControlName="id" type="hidden">
+            <div class="row">
+                <div class="col-md-2"> <label>Product Name</label></div>
+                <div class="col-md-9">
+                    <div class="input-space">
+                        <input formControlName="name" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2"> <label>Description</label></div>
+                <div class="col-md-9">
+                    <div class="input-space">
+                        <input formControlName="description" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2"> <label>Image Location</label></div>
+                <div class="col-md-9">
+                    <div class="input-space">
+                        <input formControlName="img" type="file" (change)="onImageSelected($event)">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2"> <label>Price</label></div>
+                <div class="col-md-9">
+                    <div class="input-space">
+                        <input formControlName="price" type="number" min="1" step="any">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Stock Form Group-->
+        <div formGroupName="stock" class="form-area">
+            <div class="row">
+                <div class="col-md-2"><label>Stock</label></div>
+                <div class="col-md-9">
+                    <div class="input-space">
+                        <input formControlName="productId" type="hidden">
+                        <input formControlName="stock" type="number">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Submit Buttom-->
+        <div class="text-center">
+            <button routerLink="/products" class="btn btn-danger">Cancel</button>
+            &nbsp;
+            <button type="submit" class="btn btn-info">Save</button>
+        </div>
+    </form>
+</div>
