@@ -30,6 +30,8 @@ export class ProductListComponent implements OnInit {
   }
 
   deleteProduct(productId : Number){
+    if(!confirm("are you sure you want to delete this item?")) return;
+
     this.productService.deleteProduct(productId);
     this.route.navigateByUrl("/products")
       .then(() => { 

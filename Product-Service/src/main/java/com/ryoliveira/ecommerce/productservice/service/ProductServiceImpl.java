@@ -45,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
 			if(updatedProduct.getPrice() != null) {
 				prod.setPrice(updatedProduct.getPrice());
 			}
+			prod.setCategoryId(updatedProduct.getCategoryId());
 			prodRepo.save(prod);
 			LOGGER.info("Updated Product: " + prod.toString());
 		}catch(NoSuchElementException e) {

@@ -1,12 +1,14 @@
-FROM maven:3.6.3-openjdk-8 AS MAVEN_BUILD
+#FROM maven:3.6.3-openjdk-8 AS MAVEN_BUILD
 
-COPY ./ ./
+#COPY ./ ./
 
-RUN mvn clean package
+#RUN mvn clean package
 
 FROM openjdk:8
 EXPOSE 9000
 
-COPY  --from=MAVEN_BUILD /target/Product-Service.jar Product-Service.jar
+#COPY  --from=MAVEN_BUILD /target/Product-Service.jar Product-Service.jar
+
+COPY /target/Product-Service.jar Product-Service.jar
 
 ENTRYPOINT ["java", "-jar", "Product-Service.jar"]

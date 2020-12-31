@@ -1,5 +1,6 @@
 package com.ryoliveira.ecommerce.productcatalogservice.controller;
 
+import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
 import com.ryoliveira.ecommerce.productcatalogservice.service.ProductInfoService;
@@ -39,5 +40,10 @@ public class ProductInfoController {
     private ProductInfoList getAllProducts() {
 		return prodInfoService.getAllProducts();
     }
-
+    
+    @GetMapping("/categories")
+    private CategoryList getAllCategories() {
+    	return prodInfoService.getAllCategories();
+    }
+ 
 }

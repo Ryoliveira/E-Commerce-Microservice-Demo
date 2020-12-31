@@ -5,6 +5,7 @@ import { ProductInfo } from '../common/product-info';
 import { catchError, map } from 'rxjs/operators';
 import { Product } from '../common/product';
 import { Stock } from '../common/stock';
+import { Category } from '../common/category';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ import { Stock } from '../common/stock';
 export class ProductService {
 
   private productListUrl = 'http://localhost:9020/api/inventory/products';
-  private ProductInfoUrl = 'http://localhost:9020/api/inventory/productInfo'
+  private ProductInfoUrl = 'http://localhost:9020/api/inventory/productInfo';
+  private categoryUrl = 'http://localhost:9020/api/inventory/categories';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -44,6 +46,12 @@ export class ProductService {
     );
   }
 
+  getProductCategories() : Observable<Category[]> {
+    return this.httpClient.get<CategoryListResponse>(this.categoryUrl).pipe(
+      map(response => response.categoryList)
+    );
+  }
+
 }
 
 
@@ -51,9 +59,14 @@ interface ProductListResponse {
   productInfoList: ProductInfo[]
 }
 
+interface CategoryListResponse {
+  categoryList : Category[]
+}
+
 interface ProductResponse {
   product : Product,
-  stock : Stock
+  stock : Stock,
+  category: Category
 }
 
 

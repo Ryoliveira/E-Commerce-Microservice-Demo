@@ -9,5 +9,6 @@ public class ProductInfo {
 	
 	private Product product;
 	private Stock stock;
+	private Category category;
 
 }

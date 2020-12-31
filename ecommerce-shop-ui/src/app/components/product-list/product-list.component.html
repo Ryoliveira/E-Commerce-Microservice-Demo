@@ -6,6 +6,7 @@
             <th>Item</th>
             <th>Description</th>
             <th>Price</th>
+            <th>Category</th>
             <th>Stock</th>
             <th>Action</th>
         </tr>
@@ -16,13 +17,14 @@
             <td>{{ productInfo.product.name }}</td>
             <td>{{ productInfo.product.description }}</td>
             <td>{{ productInfo.product.price | currency: 'USD' }}</td>
+            <td>{{ productInfo.category.name }}</td>
             <td>{{ productInfo.stock.stock }}</td>
             <td>
                 <button class="btn btn-primary" (click)="showProduct(productInfo.product.id)">View</button>
                 &nbsp;
                 <button class="btn btn-info" (click)="updateProduct(productInfo.product.id)">Update</button>
                 &nbsp;
-                <button class="btn btn-danger" (click)="deleteProduct(productInfo.product.id);">Delete</button>
+                <button class="btn btn-danger" (click)="deleteProduct(productInfo.product.id);" >Delete</button>
             </td>
         </tr>
     </tbody>

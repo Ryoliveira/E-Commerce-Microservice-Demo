@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.ryoliveira.ecommerce.productcatalogservice.model.Category;
+import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Product;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
@@ -27,7 +29,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 				Product.class);
 		prodInfo.getStock().setProductId(product.getId());
 		Stock stock = restTemplate.postForObject("http://STOCK-SERVICE/stock", prodInfo.getStock(), Stock.class);
-		ProductInfo response = new ProductInfo(product, stock);
+		Category category = restTemplate.getForObject("http://CATEGORY-SERVICE/category/" + product.getCategoryId(), Category.class);
+		ProductInfo response = new ProductInfo(product, stock, category);
 		return response;
 	}
 
@@ -49,7 +52,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	public ProductInfo getProductInfo(int prodId) {
 		Product product = restTemplate.getForObject("http://PRODUCT-SERVICE/product/" + prodId, Product.class);
 		Stock stock = restTemplate.getForObject("http://STOCK-SERVICE/stock/" + prodId, Stock.class);
-		return new ProductInfo(product, stock);
+		Category category = restTemplate.getForObject("http://CATEGORY-SERVICE/category/" + product.getCategoryId(), Category.class);
+		return new ProductInfo(product, stock, category);
 	}
 
 	@Override
@@ -62,13 +66,19 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 				});
 		List<Product> products = responseEntity.getBody();
 
-		//Populate list with product/stock info
+		//Populate list with product/stock/category info
 		products.stream().forEach(product -> {
 			Stock stock = restTemplate.getForObject("http://STOCK-SERVICE/stock/" + product.getId(), Stock.class);
-			productInfoList.add(new ProductInfo(product, stock));
+			Category category = restTemplate.getForObject("http://CATEGORY-SERVICE/category/" + product.getCategoryId(), Category.class);
+			productInfoList.add(new ProductInfo(product, stock, category));
 		});
 
 		return new ProductInfoList(productInfoList);
+	}
+
+	@Override
+	public CategoryList getAllCategories() {
+		return restTemplate.getForObject("http://CATEGORY-SERVICE/categories", CategoryList.class);
 	}
 
 }

@@ -57,6 +57,22 @@ services:
       - discovery-server
       - stock-db
     restart: on-failure
+    
+  category-service:
+     container_name: category-service
+     image: category-service:1.0
+     build:
+        context: ./Category-Service
+     ports:
+       - "9003:9003"
+     networks:
+       - service-network
+       - category-data
+     depends_on:
+       - config-server
+       - discovery-server
+       - category-db
+     restart: on-failure
 
   product-catalog-service:
     container_name: product-catalog-service
@@ -116,14 +132,30 @@ services:
       - stock-db:/var/lib/mysql
     networks:
       - stock-data
-
-
-
+      
+  category-db:
+    container_name: category-db
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: "category"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - "3309:3306"
+    volumes:
+      - category-db:/var/lib/mysql
+    networks:
+      - category-data
+ 
+   
 networks:
   service-network:
   product-data:
   stock-data:
+  category-data:
 
 volumes:
   product-db:
   stock-db:
+  category-db:

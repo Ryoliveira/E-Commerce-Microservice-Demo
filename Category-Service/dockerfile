@@ -1,0 +1,14 @@
+#FROM maven:3.6.3-openjdk-8 AS MAVEN_BUILD
+
+#COPY ./ ./
+
+#RUN mvn clean package
+
+FROM openjdk:8
+EXPOSE 9003
+
+#COPY  --from=MAVEN_BUILD /target/Category-Service.jar Category-Service.jar
+
+COPY target/Category-Service.jar Category-Service.jar
+
+ENTRYPOINT ["java", "-jar", "Category-Service.jar"]
