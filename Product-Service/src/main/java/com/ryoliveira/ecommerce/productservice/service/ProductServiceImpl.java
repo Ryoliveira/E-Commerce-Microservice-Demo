@@ -88,4 +88,9 @@ public class ProductServiceImpl implements ProductService {
 		return prodList;
 	}
 
+	@Override
+	public List<Product> findAllByCategoryId(int categoryId) {
+		return prodRepo.findAllByCategoryId(categoryId);
+	}
+
 }

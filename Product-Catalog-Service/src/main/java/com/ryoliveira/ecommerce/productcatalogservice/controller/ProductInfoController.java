@@ -41,6 +41,11 @@ public class ProductInfoController {
 		return prodInfoService.getAllProducts();
     }
     
+    @GetMapping("/products/{categoryId}")
+    private ProductInfoList getAllProductsByCategoryId(@PathVariable("categoryId") int categoryId) {
+    	return prodInfoService.getAllProductsByCategoryId(categoryId);
+    }
+    
     @GetMapping("/categories")
     private CategoryList getAllCategories() {
     	return prodInfoService.getAllCategories();

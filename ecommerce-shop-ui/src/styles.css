@@ -1,1 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+/* Style page content */
+.main {
+    margin-left: 160px; /* Same as the width of the sidebar */
+    padding: 0px 10px;
+  }

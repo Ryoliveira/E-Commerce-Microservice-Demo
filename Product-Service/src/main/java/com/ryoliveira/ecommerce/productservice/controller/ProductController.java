@@ -45,6 +45,11 @@ public class ProductController {
 		return prodService.findAll();
 	}
 	
+	@GetMapping("/products/{categoryId}")
+	private List<Product> getAllProductsByCategoryId(@PathVariable("categoryId") int categoryId){
+		return prodService.findAllByCategoryId(categoryId);
+	}
+	
 	
 
 }

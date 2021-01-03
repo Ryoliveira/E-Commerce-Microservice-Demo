@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, pipe } from 'rxjs';
 import { ProductInfo } from '../common/product-info';
 import { catchError, map } from 'rxjs/operators';
 import { Product } from '../common/product';
@@ -43,6 +43,13 @@ export class ProductService {
     let productUrl = `${this.ProductInfoUrl}/${productId}`;
     return this.httpClient.get<ProductResponse>(productUrl).pipe(
       map(response => response)
+    );
+  }
+
+  getProductsByCategory(categoryId : Number) : Observable<ProductInfo[]> {
+    let categoryUrl = `${this.productListUrl}/${categoryId}`;
+    return this.httpClient.get<ProductListResponse>(categoryUrl).pipe(
+      map(response => response.productInfoList)
     );
   }
 

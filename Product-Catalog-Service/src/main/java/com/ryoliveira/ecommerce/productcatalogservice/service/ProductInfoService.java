@@ -17,5 +17,7 @@ public interface ProductInfoService {
 	ProductInfoList getAllProducts();
 	
 	CategoryList getAllCategories();
+	
+	ProductInfoList getAllProductsByCategoryId(int categoryId);
 
 }

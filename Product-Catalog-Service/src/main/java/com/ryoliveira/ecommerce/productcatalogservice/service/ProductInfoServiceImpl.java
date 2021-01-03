@@ -81,4 +81,23 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		return restTemplate.getForObject("http://CATEGORY-SERVICE/categories", CategoryList.class);
 	}
 
+	@Override
+	public ProductInfoList getAllProductsByCategoryId(int categoryId) {
+		List<ProductInfo> productInfoList = new ArrayList<>();
+
+		ResponseEntity<List<Product>> responseEntity = restTemplate.exchange("http://PRODUCT-SERVICE/products/" + categoryId,
+				HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>() {
+				});
+		List<Product> products = responseEntity.getBody();
+
+		//Populate list with product/stock/category info
+		products.stream().forEach(product -> {
+			Stock stock = restTemplate.getForObject("http://STOCK-SERVICE/stock/" + product.getId(), Stock.class);
+			Category category = restTemplate.getForObject("http://CATEGORY-SERVICE/category/" + product.getCategoryId(), Category.class);
+			productInfoList.add(new ProductInfo(product, stock, category));
+		});
+
+		return new ProductInfoList(productInfoList);
+	}
+
 }

@@ -12,8 +12,10 @@ public interface ProductService {
 	
 	void removeProduct(int prodId); //TODO determine if removing by id is better than by object reference
 	
-	Product findProductById(int prodId);
+	Product findProductById(int prodId);	
 	
 	List<Product> findAll();
+	
+	List<Product> findAllByCategoryId(int categoryId);
 	
 }
