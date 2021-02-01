@@ -4,7 +4,7 @@ services:
 
   config-server:
     container_name: configserver
-    image: config-server:1.0
+    image: config-server:dev
     build:
       context: ./Config-Server
     ports:
@@ -14,7 +14,7 @@ services:
 
   discovery-server:
     container_name: discovery-server
-    image: discovery-server:1.0
+    image: discovery-server:dev
     build:
       context: ./Discovery-Server
     ports:
@@ -27,12 +27,11 @@ services:
 
 
   product-service:
-    container_name: product-service
-    image: product-service:1.0
+    image: product-service:dev
     build:
       context: ./Product-Service
-    ports:
-      - "9000:9000"
+    deploy:
+      replicas: 2
     networks:
       - service-network
       - product-data
@@ -43,12 +42,11 @@ services:
     restart: on-failure
 
   stock-service:
-    container_name: stock-service
-    image: stock-service:1.0
+    image: stock-service:dev
     build:
       context: ./Stock-Service
-    ports:
-      - "9001:9001"
+    deploy:
+      replicas: 2
     networks:
       - service-network
       - stock-data
@@ -59,12 +57,11 @@ services:
     restart: on-failure
     
   category-service:
-     container_name: category-service
-     image: category-service:1.0
+     image: category-service:dev
      build:
         context: ./Category-Service
-     ports:
-       - "9003:9003"
+     deploy:
+        replicas: 2
      networks:
        - service-network
        - category-data
@@ -75,12 +72,11 @@ services:
      restart: on-failure
 
   product-catalog-service:
-    container_name: product-catalog-service
-    image: product-catalog-service:1.0
+    image: product-catalog-service:dev
     build:
       context: ./Product-Catalog-Service
-    ports:
-      - "9002:9002"
+    deploy:
+      replicas: 2
     networks:
       - service-network
     depends_on:
@@ -91,17 +87,30 @@ services:
 
   api-gateway:
     container_name: api-gateway
-    image: api-gateway:1.0
+    image: api-gateway:dev
     build:
       context: ./Api-Gateway
     ports:
       - "9020:9020"
     networks:
-      - service-network
+      - service-network 
     depends_on:
       - config-server
       - discovery-server
     restart: on-failure
+    
+    
+  ecommerce-shop-ui:
+     container_name: ecommerce-shop-ui
+     image: ecommerce-shop-ui:dev
+     build:
+        context: ./ecommerce-shop-ui
+     ports:
+        - "4200:4200"
+     depends_on:
+        - api-gateway
+     restart: on-failure
+     
 
   product-db:
     container_name: product-db
@@ -112,7 +121,7 @@ services:
       MYSQL_PASSWORD: "password"
       MYSQL_ROOT_PASSWORD: "password"
     ports:
-      - "3307:3306"
+      - "3306"
     volumes:
       - product-db:/var/lib/mysql
     networks:
@@ -127,7 +136,7 @@ services:
       MYSQL_PASSWORD: "password"
       MYSQL_ROOT_PASSWORD: "password"
     ports:
-      - "3308:3306"
+      - "3306"
     volumes:
       - stock-db:/var/lib/mysql
     networks:
@@ -135,14 +144,14 @@ services:
       
   category-db:
     container_name: category-db
-    image: mysql:8.0
+    image: mysql:latest
     environment:
       MYSQL_DATABASE: "category"
       MYSQL_USER: "test"
       MYSQL_PASSWORD: "password"
       MYSQL_ROOT_PASSWORD: "password"
     ports:
-      - "3309:3306"
+      - "3306"
     volumes:
       - category-db:/var/lib/mysql
     networks:

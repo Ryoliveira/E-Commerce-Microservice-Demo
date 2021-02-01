@@ -1,6 +1,6 @@
 export class Category {
 
-    categoryId : Number;
+    categoryId : number;
     name : String;
 
 }

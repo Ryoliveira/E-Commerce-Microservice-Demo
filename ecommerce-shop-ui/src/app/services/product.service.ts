@@ -12,9 +12,11 @@ import { Category } from '../common/category';
 })
 export class ProductService {
 
-  private productListUrl = 'http://localhost:9020/api/inventory/products';
-  private ProductInfoUrl = 'http://localhost:9020/api/inventory/productInfo';
-  private categoryUrl = 'http://localhost:9020/api/inventory/categories';
+  private apiGatewayUrl = 'http://localhost:9020/api/inventory';
+
+  private productListUrl = `${this.apiGatewayUrl}/products`;
+  private ProductInfoUrl = `${this.apiGatewayUrl}/productInfo`;
+  private categoryUrl = `${this.apiGatewayUrl}/categories`;
 
   constructor(private httpClient: HttpClient) { }
 
@@ -29,7 +31,7 @@ export class ProductService {
   }
 
   updateProduct(productInfo : ProductInfo) {
-   this.httpClient.put(this.ProductInfoUrl, productInfo).subscribe(() => alert("Product has been updated"));
+   this.httpClient.put(this.ProductInfoUrl, productInfo).subscribe(() => alert(`${productInfo.product.name} has been updated`));
   }
 
 
@@ -47,8 +49,8 @@ export class ProductService {
   }
 
   getProductsByCategory(categoryId : Number) : Observable<ProductInfo[]> {
-    let categoryUrl = `${this.productListUrl}/${categoryId}`;
-    return this.httpClient.get<ProductListResponse>(categoryUrl).pipe(
+    let productsByCategoryUrl = `${this.productListUrl}/${categoryId}`;
+    return this.httpClient.get<ProductListResponse>(productsByCategoryUrl).pipe(
       map(response => response.productInfoList)
     );
   }

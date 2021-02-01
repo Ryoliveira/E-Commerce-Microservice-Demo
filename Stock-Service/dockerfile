@@ -5,7 +5,9 @@ COPY ./ ./
 RUN mvn clean package
 
 FROM openjdk:8
-EXPOSE 9001
 
 COPY --from=MAVEN_BUILD /target/Stock-Service.jar Stock-Service.jar
+
+#COPY /target/Stock-Service.jar Stock-Service.jar
+
 ENTRYPOINT ["java", "-jar", "Stock-Service.jar"]

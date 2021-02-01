@@ -9,4 +9,6 @@ EXPOSE 9020
 
 COPY --from=MAVEN_BUILD /target/Api-Gateway.jar Api-Gateway.jar
 
+#COPY  /target/Api-Gateway.jar Api-Gateway.jar
+
 ENTRYPOINT ["java", "-jar", "Api-Gateway.jar"]

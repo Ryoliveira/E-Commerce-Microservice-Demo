@@ -70,7 +70,7 @@ createEmptyForm(){
 }
 
 createUpdateForm(){
-  let productId : Number = +this.route.snapshot.paramMap.get('id');
+  let productId : number = +this.route.snapshot.paramMap.get('id');
   
   this.productService.getProduct(productId).subscribe(data => {
     let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category);
@@ -89,6 +89,7 @@ createUpdateForm(){
     this.categoryId.setValue(productInfo.category.categoryId);
     this.categoryName.setValue(productInfo.category.name);
 
+    console.log("Product Category Id: " + productInfo.category.categoryId);
     console.log("Stock product id " + productInfo.stock.productId);
 
     // save product image path
@@ -99,15 +100,18 @@ createUpdateForm(){
 submitProduct(){
   let product : Product = this.productInfoFormGroup.controls["product"].value;
   let stock : Stock = this.productInfoFormGroup.controls["stock"].value;
-  let category : Category = this.productInfoFormGroup.controls['category'].value;
+  let category : Category = this.productInfoFormGroup.controls["category"].value;
   let productInfo : ProductInfo = new ProductInfo(product, stock, category);
-
-  console.log(productInfo);
 
   if(this.imageFile != null){
     productInfo.product.img = this.imageFolder + this.imageFile.name;
   }else{
     productInfo.product.img = this.imagePath;
+  }
+
+  // This is a temporary fix
+  if(productInfo.product.categoryId == 0){
+    productInfo.product.categoryId = category.categoryId;
   }
   
   console.log(productInfo);
@@ -126,7 +130,7 @@ submitProduct(){
     );
   }else{
     this.productService.updateProduct(productInfo);
-    console.log("Updated Product");
+    console.log(`${productInfo.product.name} has been updated`);
   }
 
   this.router.navigateByUrl('/products')
@@ -149,7 +153,7 @@ onImageSelected(event){
 }
 
 onCategoryChange(event){
-  let id : Number = +event.target.value[0];
+  let id : number = +event.target.value[3];
   this.productCategoryId.setValue(id);
   console.log(id);
 }

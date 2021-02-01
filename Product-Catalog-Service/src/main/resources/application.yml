@@ -1,0 +1,72 @@
+#spring.application.name=Product-Catalog-Service
+#spring.config.import=configserver:http://configserver:8181
+#
+#management.endpoints.web.exposure.include=*
+#
+##Using these settings until config server is properly used in docker
+#server.port=9002
+#eureka.client.serviceUrl.defaultZone=http://discovery-server:8761/eureka
+#eureka.client.register-with-eureka=true
+#eureka.client.fetch-registry=true
+
+
+
+
+spring:
+  application:
+    name: Product-Catalog-Service
+    
+  config:
+    import: configserver:http://configserver:8181
+
+#Using these settings until config server is properly used in docker
+server:
+  port: 0
+  
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-server:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    
+    
+management.endpoints.web.exposure.include: '*'
+management.endpoint.health.show-details: always
+
+management.health.circuitbreakers.enabled: true
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 10
+        slowCallDurationThreshold: 3s # 1 second
+        slowCallRateThreshold: 50
+        permittedNumberOfCallsInHalfOpenState: 5
+        recordExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException          
+    instances:
+      productInfoServiceBreaker:
+        base-config: default
+        
+  ratelimiter:
+    configs:
+      default:
+        timeoutDuration: 5
+        limitRefreshPeriod: 20000
+        limitForPeriod: 25
+    instances:
+      productInfoRateLimiter:
+        baseConfig: default
+        
+
+

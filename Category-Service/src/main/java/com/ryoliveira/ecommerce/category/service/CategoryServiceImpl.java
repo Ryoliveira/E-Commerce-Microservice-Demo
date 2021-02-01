@@ -3,6 +3,7 @@ package com.ryoliveira.ecommerce.category.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,6 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Category findById(int categoryId) {
 		Category category = new Category();
-		
 		try {
 			Optional<Category> optional = categoryRepo.findById(categoryId);
 			category = optional.orElseThrow(() -> new NoSuchElementException());
@@ -72,5 +72,4 @@ public class CategoryServiceImpl implements CategoryService {
 	public Category saveCategory(Category category) {
 		return categoryRepo.save(category);
 	}
-
 }

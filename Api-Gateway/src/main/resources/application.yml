@@ -20,8 +20,7 @@ spring:
           enabled: true
       routes:
         - id: Product-Catalog-Service
-          #uri: lb://PRODUCT-CATALOG-SERVICE # Currently not working properly
-          uri: http://product-catalog-service:9002
+          uri: lb://PRODUCT-CATALOG-SERVICE
           predicates:
             - Path=/api/inventory/**
           filters:
