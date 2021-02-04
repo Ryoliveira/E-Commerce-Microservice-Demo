@@ -42,7 +42,7 @@
         <div formGroupName="category" class="form-area">
             <div class="col-md-2"><label>Category</label></div>
             <div class="col-md-9">
-                <select formControlName="categoryId" (change)="onCategoryChange($event)">
+                <select formControlName="categoryId" (change)="onCategoryChange(categories[$event.target.value[0]-1].categoryId)">
                     <option disabled>Select Category</option>
                     <option *ngFor="let category of categories" [ngValue]="category.categoryId">{{category.name}}</option>
                 </select>

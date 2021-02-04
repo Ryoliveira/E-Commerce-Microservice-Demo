@@ -1,0 +1,17 @@
+<div class="container-fluid">
+    <form [formGroup]="categoryInfoFormGroup" (ngSubmit)=submitCategoryName()>
+        <div formGroupName="category" class="form-area">
+            <h3>Category Form</h3>
+            <div class="row">
+                <div class="col-md-3"><label>Category Name:</label></div>
+                <div class="col-md-9">
+                    <input type="text" formControlName="name" required pattern="[A-Za-z0-9]{1,20}">
+                </div>
+            </div>
+        </div>
+        <button routerLink="/products" class="btn btn-danger" >Cancel</button>
+        &nbsp;
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+</div>

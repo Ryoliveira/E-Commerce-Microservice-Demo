@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from 'src/app/common/category';
-import { ProductService } from 'src/app/services/product.service';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,7 +12,7 @@ export class SidebarComponent implements OnInit {
 
   categories : Category[];
 
-  constructor(private productService: ProductService,
+  constructor(private categoryService: CategoryService,
               private route : Router) { }
 
   ngOnInit(): void {
@@ -20,7 +20,7 @@ export class SidebarComponent implements OnInit {
   }
 
   populateSideBar(){
-    this.productService.getProductCategories().subscribe(categories => {
+    this.categoryService.getCategoryList().subscribe(categories => {
       this.categories = categories;
     })
   }

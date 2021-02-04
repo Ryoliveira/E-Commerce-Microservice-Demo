@@ -12,11 +12,10 @@ import { Category } from '../common/category';
 })
 export class ProductService {
 
-  private apiGatewayUrl = 'http://localhost:9020/api/inventory';
+  private apiGatewayUrl = 'http://localhost:9020/api';
+  private productListUrl = `${this.apiGatewayUrl}/inventory/products`;
+  private ProductInfoUrl = `${this.apiGatewayUrl}/inventory/productInfo`;
 
-  private productListUrl = `${this.apiGatewayUrl}/products`;
-  private ProductInfoUrl = `${this.apiGatewayUrl}/productInfo`;
-  private categoryUrl = `${this.apiGatewayUrl}/categories`;
 
   constructor(private httpClient: HttpClient) { }
 
@@ -55,11 +54,7 @@ export class ProductService {
     );
   }
 
-  getProductCategories() : Observable<Category[]> {
-    return this.httpClient.get<CategoryListResponse>(this.categoryUrl).pipe(
-      map(response => response.categoryList)
-    );
-  }
+ 
 
 }
 
@@ -68,9 +63,6 @@ interface ProductListResponse {
   productInfoList: ProductInfo[]
 }
 
-interface CategoryListResponse {
-  categoryList : Category[]
-}
 
 interface ProductResponse {
   product : Product,

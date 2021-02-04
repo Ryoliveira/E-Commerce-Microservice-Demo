@@ -13,7 +13,7 @@ import com.ryoliveira.ecommerce.category.model.Category;
 import com.ryoliveira.ecommerce.category.model.CategoryList;
 import com.ryoliveira.ecommerce.category.service.CategoryService;
 
-@RestController 
+@RestController
 public class CategoryController {
 	
 	@Autowired
@@ -43,6 +43,11 @@ public class CategoryController {
 	@GetMapping("/categories")
 	private CategoryList getCategories() {
 		return categoryService.findAll();
+	}
+	
+	@GetMapping("/category/name/{categoryName}")
+	private boolean isCategoryNameInDatabase(@PathVariable("categoryName") String categoryName) {
+		return categoryService.isCategoryNamePresent(categoryName);
 	}
 	
 	

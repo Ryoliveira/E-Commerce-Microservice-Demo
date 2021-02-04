@@ -1,3 +1,12 @@
+logging:
+   level:
+      org:
+         springframework:
+            cloud:
+               gateway: DEBUG
+
+
+
 spring:
   application:
     name: Api-Gateway
@@ -24,7 +33,14 @@ spring:
           predicates:
             - Path=/api/inventory/**
           filters:
-            - RewritePath=/api/inventory/(?<segment>/?.*), /inventory/$\{segment}
+            - RewritePath=/api/(?<segment>/?.*), /$\{segment}
+            
+        - id: Category-Service
+          uri: lb://CATEGORY-SERVICE
+          predicates:
+            - Path=/api/c/**
+          filters:
+            - RewritePath=/api/c/(?<segment>/?.*), /$\{segment}
 
 eureka:
   client:

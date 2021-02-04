@@ -72,4 +72,10 @@ public class CategoryServiceImpl implements CategoryService {
 	public Category saveCategory(Category category) {
 		return categoryRepo.save(category);
 	}
+
+	@Override
+	public boolean isCategoryNamePresent(String categoryName) {
+		Optional<String> optionalName = categoryRepo.findByNameIgnoreCase(categoryName);
+		return optionalName.isPresent();
+	}
 }

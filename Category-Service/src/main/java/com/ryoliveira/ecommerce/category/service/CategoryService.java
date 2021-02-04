@@ -15,5 +15,7 @@ public interface CategoryService {
 	
 	Category updateCategory(Category updatedCategory);
 	
+	boolean isCategoryNamePresent(String categoryName);
+	
 
 }

@@ -6,6 +6,7 @@ import { Product } from 'src/app/common/product';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Stock } from 'src/app/common/stock';
 import { Category } from 'src/app/common/category';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-product-form',
@@ -20,7 +21,8 @@ imageFolder : string = "assets/images/products/";
 
 categories : Category[];
 
-constructor(private productService : ProductService, 
+constructor(private productService : ProductService,
+            private categoryService : CategoryService, 
             private formBuilder : FormBuilder,
             private router: Router,
             private route : ActivatedRoute) {}
@@ -46,7 +48,7 @@ get stock() { return this.productInfoFormGroup.get('stock.stock');}
 get categoryId() { return this.productInfoFormGroup.get("category.categoryId");}
 get categoryName() { return this.productInfoFormGroup.get("category.name");}
 
-createEmptyForm(){
+createEmptyForm() : void {
   this.productInfoFormGroup = this.formBuilder.group({
     product: this.formBuilder.group({
       id: [undefined],
@@ -69,7 +71,7 @@ createEmptyForm(){
   })
 }
 
-createUpdateForm(){
+createUpdateForm() : void {
   let productId : number = +this.route.snapshot.paramMap.get('id');
   
   this.productService.getProduct(productId).subscribe(data => {
@@ -97,7 +99,7 @@ createUpdateForm(){
   });
 }
 
-submitProduct(){
+submitProduct() : void {
   let product : Product = this.productInfoFormGroup.controls["product"].value;
   let stock : Stock = this.productInfoFormGroup.controls["stock"].value;
   let category : Category = this.productInfoFormGroup.controls["category"].value;
@@ -140,22 +142,22 @@ submitProduct(){
 
 }
 
-populateCategories(){
-  this.productService.getProductCategories().subscribe(data => {
+populateCategories() : void {
+  this.categoryService.getCategoryList().subscribe(data => {
     this.categories = data;
   })
 }
 
-onImageSelected(event){
+onImageSelected(event) : void {
   console.log(event);
   this.imageFile = event.target.files[0];
   console.log(this.imageFolder + this.imageFile.name);
 }
 
-onCategoryChange(event){
-  let id : number = +event.target.value[3];
-  this.productCategoryId.setValue(id);
-  console.log(id);
+onCategoryChange(categoryId : number) : void {
+  this.productCategoryId.setValue(categoryId);
+  console.log(categoryId);
+  console.log("-");
 }
 
 }

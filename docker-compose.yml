@@ -99,19 +99,17 @@ services:
       - discovery-server
     restart: on-failure
     
-    
   ecommerce-shop-ui:
-     container_name: ecommerce-shop-ui
-     image: ecommerce-shop-ui:dev
-     build:
-        context: ./ecommerce-shop-ui
-     ports:
-        - "4200:4200"
-     depends_on:
-        - api-gateway
-     restart: on-failure
-     
-
+    container_name: ecommerce-shop-ui
+    image: ecommerce-shop-ui:dev
+    build:
+       context: ./ecommerce-shop-ui
+    ports:
+       - "4200:4200"
+    depends_on:
+       - api-gateway
+    restart: on-failure
+    
   product-db:
     container_name: product-db
     image: mysql:8.0
