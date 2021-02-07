@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from 'src/app/services/category.service';
 
@@ -33,21 +34,23 @@ export class CategoryFormComponent implements OnInit {
 
   submitCategoryName() : void {
     let category : Category = this.categoryInfoFormGroup.controls["category"].value;
-    let isNameNotValid : boolean = this.categoryService.isCategoryNamePresent(category.name);
-    
-    if(!isNameNotValid){ 
-      this.categoryService.saveCategory(category).subscribe({
-        next : response => {
-          alert(`${response.name} has been saved`);
-        },
-        error : err => {
-          alert(`Error: ${err.message}`);
-        }
-      });
-      this.route.navigateByUrl("/products");
-    }else{
-      alert(`${category.name} is already a category, please enter a new category name`);
-    }
+    this.categoryService.isCategoryNamePresent(category.name).subscribe(isNameNotValid => {
+      if(!isNameNotValid){ 
+        console.log(category.name);
+        console.log(`Boolean : ${isNameNotValid}`)
+        this.categoryService.saveCategory(category).subscribe({
+          next : response => {
+            alert(`${response.name} has been saved`);
+          },
+          error : err => {
+            alert(`Error: ${err.message}`);
+          }
+        });
+        this.route.navigateByUrl("/products");
+      }else{
+        alert(`${category.name} is already a category, please enter a new category name`);
+      }
+    });
   }
 
 }

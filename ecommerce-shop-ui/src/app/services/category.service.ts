@@ -29,8 +29,8 @@ export class CategoryService {
     return this.httpClient.post<Category>(this.categoryUrl, category);
   }
 
-  isCategoryNamePresent(categroyName : String) : boolean {
-    return this.httpClient.get<boolean>(this.categoryHasNameUrl) ? true : false;
+  isCategoryNamePresent(categoryName : String) : Observable<boolean> {
+    return this.httpClient.get<boolean>(`${this.categoryHasNameUrl}/${categoryName}`);
   }
 
 }
