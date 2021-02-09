@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Stock } from 'src/app/common/stock';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from 'src/app/services/category.service';
+import { Image } from 'src/app/common/image';
 
 @Component({
   selector: 'app-product-form',
@@ -16,8 +17,6 @@ import { CategoryService } from 'src/app/services/category.service';
 export class ProductFormComponent implements OnInit {
 productInfoFormGroup : FormGroup;
 imageFile : File = null;
-imagePath : string = null;
-imageFolder : string = "assets/images/products/";
 
 categories : Category[];
 
@@ -41,7 +40,6 @@ get productId() { return this.productInfoFormGroup.get('product.id');}
 get name(){ return this.productInfoFormGroup.get('product.name');} 
 get description(){ return this.productInfoFormGroup.get('product.description');}
 get productCategoryId() { return this.productInfoFormGroup.get("product.categoryId");}
-get img() { return this.productInfoFormGroup.get('product.img');}
 get price() { return this.productInfoFormGroup.get('product.price');}
 get productStockId() { return this.productInfoFormGroup.get('stock.productId')}
 get stock() { return this.productInfoFormGroup.get('stock.stock');}
@@ -55,7 +53,6 @@ createEmptyForm() : void {
       name: [''],
       description: [''],
       categoryId: [0],
-      img: [''],
       price: [0]
     }),
 
@@ -67,7 +64,7 @@ createEmptyForm() : void {
     category : this.formBuilder.group({
       categoryId: [undefined],
       name : ['']
-    })
+    }),
   })
 }
 
@@ -75,7 +72,7 @@ createUpdateForm() : void {
   let productId : number = +this.route.snapshot.paramMap.get('id');
   
   this.productService.getProduct(productId).subscribe(data => {
-    let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category);
+    let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category, data.img);
 
     //populate product portion of form
     this.productId.setValue(productInfo.product.id);
@@ -93,9 +90,6 @@ createUpdateForm() : void {
 
     console.log("Product Category Id: " + productInfo.category.categoryId);
     console.log("Stock product id " + productInfo.stock.productId);
-
-    // save product image path
-    this.imagePath = productInfo.product.img;
   });
 }
 
@@ -103,13 +97,8 @@ submitProduct() : void {
   let product : Product = this.productInfoFormGroup.controls["product"].value;
   let stock : Stock = this.productInfoFormGroup.controls["stock"].value;
   let category : Category = this.productInfoFormGroup.controls["category"].value;
-  let productInfo : ProductInfo = new ProductInfo(product, stock, category);
-
-  if(this.imageFile != null){
-    productInfo.product.img = this.imageFolder + this.imageFile.name;
-  }else{
-    productInfo.product.img = this.imagePath;
-  }
+  // product info will get a null image since it is sent seperatly 
+  let productInfo : ProductInfo = new ProductInfo(product, stock, category, new Image());
 
   // This is a temporary fix
   if(productInfo.product.categoryId == 0){
@@ -120,26 +109,17 @@ submitProduct() : void {
 
   // if product id null, new product is attempting to be saved
   if(productInfo.product.id == null){
-    this.productService.saveProduct(productInfo).subscribe(
-      {
-        next: response => {
-          alert(`${response.product.name} has been added to inventory`);
-        },
-        error: err => {
-          alert(`There was an error: ${err.message}`);
-        }
-      }
-    );
+    this.productService.saveProduct(productInfo).subscribe(productInfo => {
+      this.productService.saveImg(productInfo.product.id, this.imageFile).subscribe();
+      this.redirectToProductsPage();
+    });
   }else{
     this.productService.updateProduct(productInfo);
-    console.log(`${productInfo.product.name} has been updated`);
+    if(this.imageFile != null){
+      this.productService.updateImage(productInfo.product.id, this.imageFile).subscribe();
+    }
+    this.redirectToProductsPage();
   }
-
-  this.router.navigateByUrl('/products')
-    .then(() => { 
-      window.location.reload() 
-    });
-
 }
 
 populateCategories() : void {
@@ -151,13 +131,20 @@ populateCategories() : void {
 onImageSelected(event) : void {
   console.log(event);
   this.imageFile = event.target.files[0];
-  console.log(this.imageFolder + this.imageFile.name);
+  console.log(this.imageFile);
 }
 
 onCategoryChange(categoryId : number) : void {
   this.productCategoryId.setValue(categoryId);
   console.log(categoryId);
   console.log("-");
+}
+
+redirectToProductsPage(){
+  this.router.navigateByUrl('/products')
+  .then(() => { 
+    window.location.reload() 
+  });
 }
 
 }

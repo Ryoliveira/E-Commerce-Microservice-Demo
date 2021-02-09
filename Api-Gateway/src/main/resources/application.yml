@@ -41,6 +41,13 @@ spring:
             - Path=/api/c/**
           filters:
             - RewritePath=/api/c/(?<segment>/?.*), /$\{segment}
+        
+        - id: Image-Service
+          uri: lb://IMAGE-SERVICE
+          predicates:
+            - Path=/api/p/**
+          filters:
+            - RewritePath=/api/p/(?<segment>/?.*), /$\{segment}
 
 eureka:
   client:

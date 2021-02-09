@@ -12,10 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ryoliveira.ecommerce.productcatalogservice.model.Category;
 import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
+import com.ryoliveira.ecommerce.productcatalogservice.model.Image;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Product;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
@@ -30,6 +32,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	private final String PRODUCT_SERVICE = "PRODUCT-SERVICE";
 	private final String STOCK_SERVICE = "STOCK-SERVICE";
 	private final String CATEGORY_SERVICE = "CATEGORY-SERVICE";
+	private final String IMAGE_SERVICE = "IMAGE-SERVICE";
 	
 	private final String BREAKER_NAME = "productInfoServiceBreaker";
 	private final String RATE_LIMITER_NAME = "productInfoRateLimiter";
@@ -42,6 +45,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	private String stockUrl = String.format("http://%s/stock", STOCK_SERVICE);
 	private String categoryUrl = String.format("http://%s/category", CATEGORY_SERVICE);
 	private String allCategoriesUrl = String.format("http://%s/categories", CATEGORY_SERVICE);;
+	private String imageUrl = String.format("http://%s/image", IMAGE_SERVICE);
 	
 	
 	Logger LOGGER = LoggerFactory.getLogger(ProductInfoServiceImpl.class);
@@ -54,12 +58,12 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		prodInfo.getStock().setProductId(product.getId());
 		Stock stock = restTemplate.postForObject(this.stockUrl, prodInfo.getStock(), Stock.class);
 		Category category = restTemplate.getForObject(this.categoryUrl + "/" + product.getCategoryId(), Category.class);
-		ProductInfo response = new ProductInfo(product, stock, category);
+		ProductInfo response = new ProductInfo(product, stock, category, new Image());
 		return response;
 	}
 
 	@Override
-	public ProductInfo updateProductInfo(ProductInfo updatedProdInfo) {
+	public ProductInfo updateProductInfo(ProductInfo updatedProdInfo, MultipartFile imgFile) {
 		restTemplate.put(this.productUrl, updatedProdInfo.getProduct());
 		restTemplate.put(this.stockUrl, updatedProdInfo.getStock());
 		return getProductInfo(updatedProdInfo.getProduct().getId());
@@ -74,17 +78,18 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	}
 
 	@CircuitBreaker(name=BREAKER_NAME, fallbackMethod="getProductInfoFallBack")
-    @RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getProductRateLimiterFallback")
+    //@RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getProductRateLimiterFallback")
 	@Override
 	public ProductInfo getProductInfo(int prodId) {
 		Product product = getProduct(prodId);
 		Stock stock = getProductStock(prodId);
 		// What if product comes back null?
 		Category category = getProductCategory(product.getCategoryId());
-		return new ProductInfo(product, stock, category);
+		Image img = getProductImage(product.getId());
+		return new ProductInfo(product, stock, category, img);
 	}
 
-    @RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getAllProductsRateLimiterFallback")
+    //@RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getAllProductsRateLimiterFallback")
 	@Override
 	public ProductInfoList getAllProducts() {
 
@@ -99,7 +104,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		products.stream().forEach(product -> {
 			Stock stock = getProductStock(product.getId());
 			Category category = getProductCategory(product.getCategoryId());
-			productInfoList.add(new ProductInfo(product, stock, category));
+			Image img = getProductImage(product.getId());
+			productInfoList.add(new ProductInfo(product, stock, category, img));
 		});
 
 		return new ProductInfoList(productInfoList);
@@ -125,7 +131,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		products.stream().forEach(product -> {
 			Stock stock = getProductStock(product.getId());
 			Category category = getProductCategory(product.getCategoryId());
-			productInfoList.add(new ProductInfo(product, stock, category));
+			Image img = getProductImage(product.getId());
+			productInfoList.add(new ProductInfo(product, stock, category, img));
 		});
 
 		return new ProductInfoList(productInfoList);
@@ -148,9 +155,14 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		return restTemplate.getForObject(this.categoryUrl + "/" + categoryId, Category.class);
 	}
 	
+	@Override
+	public Image getProductImage(int prodId) {
+		return restTemplate.getForObject(this.imageUrl + "/" + prodId, Image.class);
+	}
+	
 	
 	public ProductInfo getProductInfoFallBack(int prodId, Exception e) {
-		return new ProductInfo(new Product(), new Stock(), new Category());
+		return new ProductInfo(new Product(), new Stock(), new Category(), new Image());
 	}
 	
 	
@@ -161,5 +173,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     public ProductInfoList getAllProductsRateLimiterFallback(Throwable t) {
     	throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS); 
     }
+
+	
+
+
 
 }

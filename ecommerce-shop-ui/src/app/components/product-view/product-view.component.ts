@@ -23,7 +23,7 @@ export class ProductViewComponent implements OnInit {
   getProduct(){
     let productId : Number = +this.activatedRoute.snapshot.paramMap.get('id');
     this.productService.getProduct(productId).subscribe( data => {
-      this.productInfo = new ProductInfo(data.product, data.stock, data.category);
+      this.productInfo = new ProductInfo(data.product, data.stock, data.category, data.img);
     })
   }
 

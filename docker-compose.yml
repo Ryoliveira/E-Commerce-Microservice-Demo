@@ -31,7 +31,7 @@ services:
     build:
       context: ./Product-Service
     deploy:
-      replicas: 2
+      replicas: 1
     networks:
       - service-network
       - product-data
@@ -46,7 +46,7 @@ services:
     build:
       context: ./Stock-Service
     deploy:
-      replicas: 2
+      replicas: 1
     networks:
       - service-network
       - stock-data
@@ -61,7 +61,7 @@ services:
      build:
         context: ./Category-Service
      deploy:
-        replicas: 2
+        replicas: 1
      networks:
        - service-network
        - category-data
@@ -70,15 +70,30 @@ services:
        - discovery-server
        - category-db
      restart: on-failure
+     
+  image-service:
+     image: image-service:dev
+     build:
+        context: ./image-Service
+     deploy:
+        replicas: 1
+     networks:
+       - service-network
+       - image-data
+     depends_on:
+       - discovery-server
+       - image-db
+     restart: on-failure
 
   product-catalog-service:
     image: product-catalog-service:dev
     build:
       context: ./Product-Catalog-Service
     deploy:
-      replicas: 2
+      replicas: 1
     networks:
       - service-network
+      - image-data
     depends_on:
       - config-server
       - discovery-server
@@ -99,6 +114,7 @@ services:
       - discovery-server
     restart: on-failure
     
+  
   ecommerce-shop-ui:
     container_name: ecommerce-shop-ui
     image: ecommerce-shop-ui:dev
@@ -109,6 +125,7 @@ services:
     depends_on:
        - api-gateway
     restart: on-failure
+    
     
   product-db:
     container_name: product-db
@@ -142,7 +159,7 @@ services:
       
   category-db:
     container_name: category-db
-    image: mysql:latest
+    image: mysql:8.0
     environment:
       MYSQL_DATABASE: "category"
       MYSQL_USER: "test"
@@ -154,6 +171,21 @@ services:
       - category-db:/var/lib/mysql
     networks:
       - category-data
+      
+  image-db:
+    container_name: image-db
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: "image"
+      MYSQL_USER: "test"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - "3306"
+    volumes:
+      - image-db:/var/lib/mysql
+    networks:
+      - image-data
  
    
 networks:
@@ -161,8 +193,10 @@ networks:
   product-data:
   stock-data:
   category-data:
+  image-data:
 
 volumes:
   product-db:
   stock-db:
   category-db:
+  image-db:

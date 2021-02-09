@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ProductService } from 'src/app/services/product.service';
 import { ProductInfo } from 'src/app/common/product-info';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SafeUrl } from '@angular/platform-browser';
+import { Image } from '../../common/image';
 
 @Component({
   selector: 'app-product-list',
@@ -58,6 +60,10 @@ export class ProductListComponent implements OnInit {
 
   showProduct(id : Number){
     this.route.navigateByUrl(`/product-view/${id}`);
+  }
+
+  sanitizeImgUrl(img : Image) : SafeUrl {
+    return this.productService.sanitizeUrl(img);
   }
 
 

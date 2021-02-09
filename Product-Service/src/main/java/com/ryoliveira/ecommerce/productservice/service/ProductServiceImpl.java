@@ -39,9 +39,6 @@ public class ProductServiceImpl implements ProductService {
 			if(updatedProduct.getDescription() != null) {
 				prod.setDescription(updatedProduct.getDescription());
 			}
-			if(updatedProduct.getImg() != null) {
-				prod.setImg(updatedProduct.getImg());
-			}
 			if(updatedProduct.getPrice() != null) {
 				prod.setPrice(updatedProduct.getPrice());
 			}
