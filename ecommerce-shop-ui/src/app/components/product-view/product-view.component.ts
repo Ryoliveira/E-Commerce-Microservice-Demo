@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Image } from 'src/app/common/image';
 import { ProductInfo } from 'src/app/common/product-info';
 import { ProductService } from 'src/app/services/product.service';
 
@@ -13,7 +14,6 @@ export class ProductViewComponent implements OnInit {
   productInfo : ProductInfo;
 
   constructor(private productService : ProductService,
-              private route: Router, 
               private activatedRoute : ActivatedRoute) { }
 
   ngOnInit(): void {
@@ -22,9 +22,13 @@ export class ProductViewComponent implements OnInit {
 
   getProduct(){
     let productId : Number = +this.activatedRoute.snapshot.paramMap.get('id');
-    this.productService.getProduct(productId).subscribe( data => {
-      this.productInfo = new ProductInfo(data.product, data.stock, data.category, data.img);
-    })
+    this.productService.getProduct(productId).subscribe( productInfo => {
+      this.productInfo = productInfo;
+    });
+  }
+
+  sanitizeImgUrl(img : Image){
+    return this.productService.sanitizeUrl(img);
   }
 
 }

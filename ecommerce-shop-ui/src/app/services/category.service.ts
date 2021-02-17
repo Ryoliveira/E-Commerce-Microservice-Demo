@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Category } from '../common/category';
+import { SidebarComponent } from '../components/sidebar/sidebar.component';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,6 @@ export class CategoryService {
   isCategoryNamePresent(categoryName : String) : Observable<boolean> {
     return this.httpClient.get<boolean>(`${this.categoryHasNameUrl}/${categoryName}`);
   }
-
 }
 
 

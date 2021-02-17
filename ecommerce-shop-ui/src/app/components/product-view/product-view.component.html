@@ -6,4 +6,7 @@
 </div>
 <div>
     <h1>{{ productInfo.product.name }}</h1>
+    <img [src]="sanitizeImgUrl(productInfo.img)" width="100px" height="100px">
+    <p><strong>Description: </strong>{{ productInfo.product.description }}</p>
+    <p><strong>Price:</strong> {{ productInfo.product.price | currency: 'USD'}} </p>
 </div>

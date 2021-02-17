@@ -25,7 +25,6 @@ export class ProductListComponent implements OnInit {
     }else{
       this.listProducts();
     }
-
   }
   listProductsByCategory() {
     let categoryId: Number = +this.activeRoute.snapshot.paramMap.get("categoryId");
@@ -48,10 +47,7 @@ export class ProductListComponent implements OnInit {
     if(!confirm("are you sure you want to delete this item?")) return;
 
     this.productService.deleteProduct(productId);
-    this.route.navigateByUrl("/products")
-      .then(() => { 
-        window.location.reload();
-      });
+    window.location.reload();
   }
 
   updateProduct(id : Number){

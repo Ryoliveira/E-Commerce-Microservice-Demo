@@ -28,7 +28,7 @@ public class Image {
 	private String fileType;
 	
 	@Lob
-	@Column(name="image_bytes", columnDefinition = "MEDIUMBLOB")
+	@Column(name="image_bytes", columnDefinition = "LONGBLOB")
 	private String image;
 
 }

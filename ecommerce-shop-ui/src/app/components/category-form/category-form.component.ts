@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from 'src/app/services/category.service';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-category-form',
@@ -36,8 +37,6 @@ export class CategoryFormComponent implements OnInit {
     let category : Category = this.categoryInfoFormGroup.controls["category"].value;
     this.categoryService.isCategoryNamePresent(category.name).subscribe(isNameNotValid => {
       if(!isNameNotValid){ 
-        console.log(category.name);
-        console.log(`Boolean : ${isNameNotValid}`)
         this.categoryService.saveCategory(category).subscribe({
           next : response => {
             alert(`${response.name} has been saved`);
@@ -46,7 +45,7 @@ export class CategoryFormComponent implements OnInit {
             alert(`Error: ${err.message}`);
           }
         });
-        this.route.navigateByUrl("/products");
+        this.route.navigateByUrl("/products").then(() => window.location.reload());
       }else{
         alert(`${category.name} is already a category, please enter a new category name`);
       }

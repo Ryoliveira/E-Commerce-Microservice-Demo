@@ -25,8 +25,11 @@ export class SidebarComponent implements OnInit {
     })
   }
 
-  redirectToProductList(categoryId : Number){
+  showProductsInCategory(categoryId : Number){
     this.route.navigateByUrl('/').then(() => this.route.navigateByUrl(`/products/${categoryId}`));
   }
 
+  showAllProducts(){
+    this.route.navigateByUrl('/').then(()=> this.route.navigateByUrl("/products"));
+  }
 }

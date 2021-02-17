@@ -1,4 +1,5 @@
 <!-- Side navigation -->
 <div class="sidenav">
-    <a (click)="redirectToProductList(category.categoryId)" *ngFor="let category of categories">{{ category.name }}</a>
+    <a (click)="showAllProducts()">All Products</a>
+    <a (click)="showProductsInCategory(category.categoryId)" *ngFor="let category of categories">{{ category.name }}</a>
 </div>
