@@ -1,12 +1,18 @@
 
 
 
-<div style="align-content: center;">
-    <img src="" height="200px">
+<div class="display-box">
+    <div class="title">
+        <h1>{{ productInfo.product.name }}</h1>
+    </div>
+    <div>
+        
+        <img [src]="sanitizeImgUrl(productInfo.img)" class="product-image">
+        <p><strong>Description: </strong>{{ productInfo.product.description }}</p>
+        <p><strong>Price:</strong> {{ productInfo.product.price | currency: 'USD'}} </p>
+        <!-- In stock and out of stock need CSS and better if conditions (if/else) -->
+        <div *ngIf="productInfo.stock.stock > 0;">In Stock</div>
+        <div *ngIf="productInfo.stock.stock == 0;">Out of Stock</div>
+    </div>
 </div>
-<div>
-    <h1>{{ productInfo.product.name }}</h1>
-    <img [src]="sanitizeImgUrl(productInfo.img)" width="100px" height="100px">
-    <p><strong>Description: </strong>{{ productInfo.product.description }}</p>
-    <p><strong>Price:</strong> {{ productInfo.product.price | currency: 'USD'}} </p>
-</div>
+
