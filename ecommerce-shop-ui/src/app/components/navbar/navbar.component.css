@@ -1,0 +1,23 @@
+.topnav {
+    height: 15%;
+    width: 100%;
+    background-color: black;
+    padding: 0;
+    margin: 0;
+}
+
+.topnav a {
+    font-size: 20px;
+    color: #818181;
+    text-decoration: none;
+}
+
+.topnav a:hover {
+    color: honeydew;
+}
+
+.topnav span {
+    font-size: 20px;
+    margin: 10px;
+    color: gray;
+}
