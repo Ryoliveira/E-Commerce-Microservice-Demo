@@ -27,7 +27,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Product updateProduct(Product updatedProduct) {
+	public Product updateProduct(Product updatedProduct) throws NoSuchElementException{
 		Optional<Product> optional = prodRepo.findById(updatedProduct.getId());
 		Product prod = new Product();
 		
@@ -47,25 +47,27 @@ public class ProductServiceImpl implements ProductService {
 			LOGGER.info("Updated Product: " + prod.toString());
 		}catch(NoSuchElementException e) {
 			LOGGER.error(e.getMessage());
+			throw new NoSuchElementException(e.getMessage());
 		}
 		return prod;
 	}
 
 	@Override
-	public void removeProduct(int prodId) {
-		Optional<Product> optional = prodRepo.findById(prodId);
+	public void removeProduct(int prodId) throws NoSuchElementException {
 		try {
+			Optional<Product> optional = prodRepo.findById(prodId);
 			Product prod = optional.orElseThrow(() -> new NoSuchElementException("No product with id: " + prodId));
 			prodRepo.delete(prod);
 			LOGGER.info("Deleted Product: " + prod.toString());
 		}catch(NoSuchElementException e) {
 			LOGGER.error(e.getMessage());
+			throw new NoSuchElementException(e.getMessage());
 		}
 
 	}
 
 	@Override
-	public Product findProductById(int prodId) {
+	public Product findProductById(int prodId) throws NoSuchElementException {
 		Optional<Product> optional = prodRepo.findById(prodId);
 		Product prod = new Product();
 		
@@ -74,6 +76,7 @@ public class ProductServiceImpl implements ProductService {
 			LOGGER.info("Product Pulled: " + prod.toString());
 		}catch(NoSuchElementException e) {
 			LOGGER.error(e.getMessage());
+			throw new NoSuchElementException(e.getMessage());
 		}
 		return prod;
 	}

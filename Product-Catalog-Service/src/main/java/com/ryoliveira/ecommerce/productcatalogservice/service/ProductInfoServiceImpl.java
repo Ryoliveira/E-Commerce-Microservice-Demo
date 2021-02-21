@@ -71,12 +71,16 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	public void deleteProduct(int prodId) {
 		String deleteProductUrl = this.productUrl + "/" + prodId;
 		String deleteStockUrl = this.stockUrl + "/" + prodId;
-		restTemplate.delete(deleteProductUrl);
-//		restTemplate.delete(deleteStockUrl);
 		
+		//Delete Product using product service
+		ResponseEntity<String> productServiceResponse = restTemplate.exchange(deleteProductUrl, HttpMethod.DELETE, null, String.class);
+		String productResponseMsg = productServiceResponse.getBody();
+		LOGGER.info(productResponseMsg + " | Status Code: " + productServiceResponse.getStatusCode());
+		
+		//Delete stock using stock service
 		ResponseEntity<String> stockServiceResponse = restTemplate.exchange(deleteStockUrl, HttpMethod.DELETE, null, String.class);
-		String responseMsg = stockServiceResponse.getBody();
-		LOGGER.info(responseMsg + " | Status Code: " + stockServiceResponse.getStatusCode()) ;
+		String stockResponseMsg = stockServiceResponse.getBody();
+		LOGGER.info(stockResponseMsg + " | Status Code: " + stockServiceResponse.getStatusCode()) ;
 	}
 
 	@CircuitBreaker(name=BREAKER_NAME, fallbackMethod="getProductInfoFallBack")

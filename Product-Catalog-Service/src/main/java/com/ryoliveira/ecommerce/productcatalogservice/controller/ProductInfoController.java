@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
-import com.ryoliveira.ecommerce.productcatalogservice.model.Image;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
 import com.ryoliveira.ecommerce.productcatalogservice.service.ProductInfoService;
