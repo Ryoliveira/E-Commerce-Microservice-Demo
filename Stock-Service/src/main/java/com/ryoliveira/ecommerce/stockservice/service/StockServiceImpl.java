@@ -39,20 +39,26 @@ public class StockServiceImpl implements StockService {
 	@Override
 	public Stock updateStock(Stock stock) {
 		Optional<Stock> optional = stockRepo.findById(stock.getProductId());
-		Stock originalStock = new Stock();
+		Stock originalStock = null;
 		try {
 			originalStock = optional.orElseThrow(() -> new NoSuchElementException("No Stock with id: " + stock.getProductId()));
 			originalStock.setStock(stock.getStock());
 			stockRepo.save(originalStock);
 		}catch(NoSuchElementException e) {
 			LOGGER.error(e.getMessage());
+			throw new NoSuchElementException(e.getMessage());
 		}
-		return stock;
+		return originalStock;
 	}
 
 	@Override
-	public void deleteStock(int prodId) {
-		stockRepo.deleteById(prodId);
+	public void deleteStock(int prodId) throws NoSuchElementException {
+		try {
+			stockRepo.deleteById(prodId);
+		}catch(IllegalArgumentException e) {
+			LOGGER.error(e.getMessage());
+			throw new NoSuchElementException("No stock found with product id: " + prodId);
+		}
 	}
 
 }

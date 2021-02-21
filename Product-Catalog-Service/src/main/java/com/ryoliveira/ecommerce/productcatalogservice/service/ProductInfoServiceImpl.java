@@ -53,11 +53,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
 	@Override
 	public ProductInfo saveProductInfo(ProductInfo prodInfo) {
-		Product product = restTemplate.postForObject(this.productUrl, prodInfo.getProduct(),
-				Product.class);
-		prodInfo.getStock().setProductId(product.getId());
-		Stock stock = restTemplate.postForObject(this.stockUrl, prodInfo.getStock(), Stock.class);
-		Category category = restTemplate.getForObject(this.categoryUrl + "/" + product.getCategoryId(), Category.class);
+		Product product = saveProduct(prodInfo.getProduct());
+		Stock stock = saveStock(product.getId(), prodInfo.getStock());
+		Category category = getProductCategory(product.getCategoryId());
 		ProductInfo response = new ProductInfo(product, stock, category, new Image());
 		return response;
 	}
@@ -74,7 +72,11 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		String deleteProductUrl = this.productUrl + "/" + prodId;
 		String deleteStockUrl = this.stockUrl + "/" + prodId;
 		restTemplate.delete(deleteProductUrl);
-		restTemplate.delete(deleteStockUrl);
+//		restTemplate.delete(deleteStockUrl);
+		
+		ResponseEntity<String> stockServiceResponse = restTemplate.exchange(deleteStockUrl, HttpMethod.DELETE, null, String.class);
+		String responseMsg = stockServiceResponse.getBody();
+		LOGGER.info(responseMsg + " | Status Code: " + stockServiceResponse.getStatusCode()) ;
 	}
 
 	@CircuitBreaker(name=BREAKER_NAME, fallbackMethod="getProductInfoFallBack")
@@ -146,7 +148,11 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
 	@Override
 	public Stock getProductStock(int prodId) {
-		return restTemplate.getForObject(this.stockUrl + "/" + prodId, Stock.class);
+		String productStockUrl = this.stockUrl + "/" + prodId;
+		ResponseEntity<Stock> response = restTemplate.getForEntity(productStockUrl, Stock.class);
+		LOGGER.info("Stock retrieval code: " + response.getStatusCode());
+		Stock stock = response.getBody();
+		return stock;
 	}
 
 	
@@ -173,6 +179,23 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     public ProductInfoList getAllProductsRateLimiterFallback(Throwable t) {
     	throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS); 
     }
+
+	@Override
+	public Product saveProduct(Product product) {
+		ResponseEntity<Product> response = restTemplate.postForEntity(this.productUrl, product, Product.class);
+		LOGGER.info("Saved Product status code: " + response.getStatusCodeValue());
+		Product savedProduct = response.getBody();
+		return savedProduct;
+	}
+
+	@Override
+	public Stock saveStock(int productId, Stock stock) {
+		stock.setProductId(productId);
+		ResponseEntity<Stock> response = restTemplate.postForEntity(this.stockUrl, stock, Stock.class);
+		LOGGER.info("Saved Stock status code: " + response.getStatusCodeValue());
+		Stock savedStock = response.getBody();
+		return savedStock;
+	}
 
 	
 

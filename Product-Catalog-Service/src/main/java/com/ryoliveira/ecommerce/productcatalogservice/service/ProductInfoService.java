@@ -33,5 +33,13 @@ public interface ProductInfoService {
 	CategoryList getAllCategories();
 	
 	ProductInfoList getAllProductsByCategoryId(int categoryId);
+	
+	Product saveProduct(Product product);
+	
+	Stock saveStock(int productId, Stock stock);
+	
+	
+	
+	
 
 }
