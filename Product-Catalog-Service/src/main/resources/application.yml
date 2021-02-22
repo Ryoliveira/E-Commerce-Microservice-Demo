@@ -53,7 +53,9 @@ resilience4j:
         recordExceptions:
           - org.springframework.web.client.HttpServerErrorException
           - java.util.concurrent.TimeoutException
-          - java.io.IOException          
+          - java.io.IOException
+        ignoreExceptions:
+          - java.util.NoSuchElementException        
     instances:
       productInfoServiceBreaker:
         base-config: default

@@ -2,6 +2,7 @@ package com.ryoliveira.ecommerce.productcatalogservice.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +12,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ryoliveira.ecommerce.productcatalogservice.model.Category;
@@ -22,9 +23,6 @@ import com.ryoliveira.ecommerce.productcatalogservice.model.Product;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Stock;
-
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 @Service
 public class ProductInfoServiceImpl implements ProductInfoService {
@@ -56,43 +54,55 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		Product product = saveProduct(prodInfo.getProduct());
 		Stock stock = saveStock(product.getId(), prodInfo.getStock());
 		Category category = getProductCategory(product.getCategoryId());
-		ProductInfo response = new ProductInfo(product, stock, category, new Image());
-		return response;
+		ProductInfo savedProduct = new ProductInfo(product, stock, category, new Image());
+		return savedProduct;
 	}
 
 	@Override
-	public ProductInfo updateProductInfo(ProductInfo updatedProdInfo, MultipartFile imgFile) {
-		restTemplate.put(this.productUrl, updatedProdInfo.getProduct());
-		restTemplate.put(this.stockUrl, updatedProdInfo.getStock());
-		return getProductInfo(updatedProdInfo.getProduct().getId());
+	public ProductInfo updateProductInfo(ProductInfo updatedProdInfo) throws NoSuchElementException{
+		try {
+			restTemplate.put(this.productUrl, updatedProdInfo.getProduct());
+			restTemplate.put(this.stockUrl, updatedProdInfo.getStock());
+			return getProductInfo(updatedProdInfo.getProduct().getId());
+		}catch(HttpStatusCodeException e) {
+			throw new NoSuchElementException(e.getMessage());
+		}
 	}
 
 	@Override
-	public void deleteProduct(int prodId) {
+	public void deleteProduct(int prodId) throws NoSuchElementException{
 		String deleteProductUrl = this.productUrl + "/" + prodId;
 		String deleteStockUrl = this.stockUrl + "/" + prodId;
 		
-		//Delete Product using product service
-		ResponseEntity<String> productServiceResponse = restTemplate.exchange(deleteProductUrl, HttpMethod.DELETE, null, String.class);
-		String productResponseMsg = productServiceResponse.getBody();
-		LOGGER.info(productResponseMsg + " | Status Code: " + productServiceResponse.getStatusCode());
-		
-		//Delete stock using stock service
-		ResponseEntity<String> stockServiceResponse = restTemplate.exchange(deleteStockUrl, HttpMethod.DELETE, null, String.class);
-		String stockResponseMsg = stockServiceResponse.getBody();
-		LOGGER.info(stockResponseMsg + " | Status Code: " + stockServiceResponse.getStatusCode()) ;
+		try {
+			//Delete Product using product service
+			ResponseEntity<String> productServiceResponse = restTemplate.exchange(deleteProductUrl, HttpMethod.DELETE, null, String.class);
+			String productResponseMsg = productServiceResponse.getBody();
+			LOGGER.info(productResponseMsg + " | Status Code: " + productServiceResponse.getStatusCode());
+			
+			//Delete stock using stock service
+			ResponseEntity<String> stockServiceResponse = restTemplate.exchange(deleteStockUrl, HttpMethod.DELETE, null, String.class);
+			String stockResponseMsg = stockServiceResponse.getBody();
+			LOGGER.info(stockResponseMsg + " | Status Code: " + stockServiceResponse.getStatusCode()) ;
+		}catch(HttpStatusCodeException e) {
+			throw new NoSuchElementException(e.getMessage());
+		}
 	}
 
-	@CircuitBreaker(name=BREAKER_NAME, fallbackMethod="getProductInfoFallBack")
+	//@CircuitBreaker(name=BREAKER_NAME, fallbackMethod="getProductInfoFallBack")
     //@RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getProductRateLimiterFallback")
 	@Override
-	public ProductInfo getProductInfo(int prodId) {
-		Product product = getProduct(prodId);
-		Stock stock = getProductStock(prodId);
-		// What if product comes back null?
-		Category category = getProductCategory(product.getCategoryId());
-		Image img = getProductImage(product.getId());
-		return new ProductInfo(product, stock, category, img);
+	public ProductInfo getProductInfo(int prodId) throws NoSuchElementException {
+		try {
+			Product product = getProduct(prodId);
+			Stock stock = getProductStock(prodId);
+			Category category = getProductCategory(product.getCategoryId());
+			Image img = getProductImage(product.getId());
+			return new ProductInfo(product, stock, category, img);
+		}catch(HttpStatusCodeException e) {
+			throw new NoSuchElementException(e.getMessage());
+		}
+	
 	}
 
     //@RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getAllProductsRateLimiterFallback")
@@ -123,7 +133,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	}
 
 	
-	@RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getAllProductsRateLimiterFallback")
+	//@RateLimiter(name=RATE_LIMITER_NAME, fallbackMethod="getAllProductsRateLimiterFallback")
 	@Override
 	public ProductInfoList getAllProductsByCategoryId(int categoryId) {
 		List<ProductInfo> productInfoList = new ArrayList<>();
