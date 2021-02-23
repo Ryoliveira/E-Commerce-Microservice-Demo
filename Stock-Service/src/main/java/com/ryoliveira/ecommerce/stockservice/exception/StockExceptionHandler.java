@@ -1,4 +1,4 @@
-package com.ryoliveira.ecommerce.productservice.exception;
+package com.ryoliveira.ecommerce.stockservice.exception;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +14,19 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 
 @ControllerAdvice
-public class ProductExceptionHandler extends ResponseEntityExceptionHandler {
+public class StockExceptionHandler extends ResponseEntityExceptionHandler{
 	
-	Logger EXCEPTION_LOGGER = LoggerFactory.getLogger(ProductExceptionHandler.class); 
+	Logger EXCEPTION_LOGGER = LoggerFactory.getLogger(StockExceptionHandler.class);
 	
-	private String INCORRECT_REQUEST = "INCORRECT_REQUEST";
+	private final String INCORRECT_REQUEST = "INCORRECT_REQUEST";
 	
-	@ExceptionHandler(ProductNotFoundException.class)
-	public final  ResponseEntity<ErrorResponse> handleProductNotFoundException
-    (ProductNotFoundException ex, WebRequest request) {
+	@ExceptionHandler(StockNotFoundException.class)
+	public final ResponseEntity<ErrorResponse> handleStockNotFoundException(StockNotFoundException ex, WebRequest request){
 		List<String> details = new ArrayList<>();
 		details.add(ex.getLocalizedMessage());
-		ErrorResponse error = new ErrorResponse(INCORRECT_REQUEST, details);
 		EXCEPTION_LOGGER.error(ex.getMessage());
+		ErrorResponse error = new ErrorResponse(INCORRECT_REQUEST, details);
 		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 	}
+
 }

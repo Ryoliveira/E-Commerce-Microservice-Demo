@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ryoliveira.ecommerce.stockservice.dao.StockRepository;
+import com.ryoliveira.ecommerce.stockservice.exception.StockNotFoundException;
 import com.ryoliveira.ecommerce.stockservice.model.Stock;
 
 @Service
 public class StockServiceImpl implements StockService {
-	
+
 	Logger LOGGER = LoggerFactory.getLogger(StockServiceImpl.class);
-	
+
 	@Autowired
 	private StockRepository stockRepo;
 
@@ -27,12 +28,8 @@ public class StockServiceImpl implements StockService {
 	@Override
 	public Stock findByProductId(int prodId) {
 		Optional<Stock> optional = stockRepo.findById(prodId);
-		Stock stock = new Stock();
-		try {
-			stock = optional.orElseThrow(() -> new NoSuchElementException("No Stock with id: " + prodId));
-		}catch(NoSuchElementException e) {
-			LOGGER.error(e.getMessage());
-		}
+		Stock stock = null;
+		stock = optional.orElseThrow(() -> new StockNotFoundException("No stock found with product id: " + prodId));
 		return stock;
 	}
 
@@ -40,14 +37,10 @@ public class StockServiceImpl implements StockService {
 	public Stock updateStock(Stock stock) {
 		Optional<Stock> optional = stockRepo.findById(stock.getProductId());
 		Stock originalStock = null;
-		try {
-			originalStock = optional.orElseThrow(() -> new NoSuchElementException("No Stock with id: " + stock.getProductId()));
-			originalStock.setStock(stock.getStock());
-			stockRepo.save(originalStock);
-		}catch(NoSuchElementException e) {
-			LOGGER.error(e.getMessage());
-			throw new NoSuchElementException(e.getMessage());
-		}
+		originalStock = optional
+				.orElseThrow(() -> new StockNotFoundException("No stock found with product id: " + stock.getProductId()));
+		originalStock.setStock(stock.getStock());
+		stockRepo.save(originalStock);
 		return originalStock;
 	}
 
@@ -55,9 +48,9 @@ public class StockServiceImpl implements StockService {
 	public void deleteStock(int prodId) throws NoSuchElementException {
 		try {
 			stockRepo.deleteById(prodId);
-		}catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			LOGGER.error(e.getMessage());
-			throw new NoSuchElementException("No stock found with product id: " + prodId);
+			throw new StockNotFoundException("No stock found with product id: " + prodId);
 		}
 	}
 
