@@ -24,17 +24,8 @@ public class ImageServiceImpl implements ImageService {
 	private ImageRepository imageRepo;
 
 	@Override
-	public Image saveImage(MultipartFile file, int productId) {
-		Image img = null;
-		try {
-			img = new Image(productId, file.getOriginalFilename(), file.getContentType(),
-					Base64.getEncoder().encodeToString(file.getBytes()));
-			imageRepo.save(img);
-			LOGGER.info("image has been saved with id:" + productId);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return img;
+	public Image saveImage(Image img) {
+		return imageRepo.save(img);
 	}
 
 	@Override
@@ -47,19 +38,17 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public Image updateImage(MultipartFile file, int productId) throws ImageNotFoundException {
+	public Image updateImage(Image updatedImg, int productId) throws ImageNotFoundException {
 		Optional<Image> optional = imageRepo.findById(productId);
 		Image img = new Image();
-		try {
-			img = optional.orElseThrow(
-					() -> new ImageNotFoundException("No Image with product id:" + productId + " was found"));
-			img.setFileName(file.getOriginalFilename());
-			img.setFileType(file.getContentType());
-			img.setImage(Base64.getEncoder().encodeToString(file.getBytes()));
-			imageRepo.save(img);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		img = optional
+				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + productId + " was found"));
+		img.setFileName(updatedImg.getFileName());
+		img.setFileType(updatedImg.getFileType());
+		img.setImage(updatedImg.getImage());
+		imageRepo.save(img);
+
 		return img;
 	}
 

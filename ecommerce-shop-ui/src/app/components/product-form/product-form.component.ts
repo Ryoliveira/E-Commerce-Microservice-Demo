@@ -109,15 +109,11 @@ submitProduct() : void {
 
   // if product id null, new product is attempting to be saved
   if(productInfo.product.id == null){
-    this.productService.saveProduct(productInfo).subscribe(productInfo => {
-      this.productService.saveImg(productInfo.product.id, this.imageFile).subscribe();
+    this.productService.saveProduct(productInfo, this.imageFile).subscribe(productInfo => {
       this.redirectToProductsPage();
     });
   }else{
-    this.productService.updateProduct(productInfo);
-    if(this.imageFile != null){
-      this.productService.updateImage(productInfo.product.id, this.imageFile).subscribe();
-    }
+    this.productService.updateProduct(productInfo, this.imageFile);
     this.redirectToProductsPage();
   }
 }
@@ -129,15 +125,11 @@ populateCategories() : void {
 }
 
 onImageSelected(event) : void {
-  console.log(event);
   this.imageFile = event.target.files[0];
-  console.log(this.imageFile);
 }
 
 onCategoryChange(categoryId : number) : void {
   this.productCategoryId.setValue(categoryId);
-  console.log(categoryId);
-  console.log("-");
 }
 
 redirectToProductsPage(){

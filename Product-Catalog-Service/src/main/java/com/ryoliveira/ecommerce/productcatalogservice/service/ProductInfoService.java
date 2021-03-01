@@ -1,5 +1,7 @@
 package com.ryoliveira.ecommerce.productcatalogservice.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ryoliveira.ecommerce.productcatalogservice.model.Category;
 import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Image;
@@ -10,9 +12,9 @@ import com.ryoliveira.ecommerce.productcatalogservice.model.Stock;
 
 public interface ProductInfoService {
 	
-	ProductInfo saveProductInfo(ProductInfo prodInfo);
+	ProductInfo saveProductInfo(String productInfoJsonString, MultipartFile imageFile);
 	
-	ProductInfo updateProductInfo(ProductInfo updatedProdInfo);
+	ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile imageFile);
 	
 	void deleteProduct(int prodId);
 	
@@ -35,6 +37,10 @@ public interface ProductInfoService {
 	Product saveProduct(Product product);
 	
 	Stock saveStock(int productId, Stock stock);
+	
+	Image saveImage(int productId, Image image);
+	
+	ProductInfo mapJsonToProductInfo(String json);
 	
 	
 	

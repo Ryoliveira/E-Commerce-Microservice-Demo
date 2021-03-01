@@ -8,14 +8,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Category;
 import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Image;
@@ -38,6 +49,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	@Autowired
 	private RestTemplate restTemplate;
 	
+	@Autowired
+	private ImageService imageService;
+	
 	private String productUrl = String.format("http://%s/product", PRODUCT_SERVICE);
 	private String allProductsUrl = String.format("http://%s/products", PRODUCT_SERVICE);
 	private String stockUrl = String.format("http://%s/stock", STOCK_SERVICE);
@@ -50,20 +64,36 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	
 
 	@Override
-	public ProductInfo saveProductInfo(ProductInfo prodInfo) {
-		Product product = saveProduct(prodInfo.getProduct());
-		Stock stock = saveStock(product.getId(), prodInfo.getStock());
+	public ProductInfo saveProductInfo(String productInfoJsonString, MultipartFile imageFile) {
+		ProductInfo productInfo = mapJsonToProductInfo(productInfoJsonString);
+		Product product = saveProduct(productInfo.getProduct());
+		Stock stock = saveStock(product.getId(), productInfo.getStock());
 		Category category = getProductCategory(product.getCategoryId());
-		ProductInfo savedProduct = new ProductInfo(product, stock, category, new Image());
+		
+		//save image
+		Image img = imageService.createImageObject(product.getId(), imageFile);
+		Image productImg = saveImage(product.getId(), img);
+		
+		
+		ProductInfo savedProduct = new ProductInfo(product, stock, category, productImg);
 		return savedProduct;
 	}
 
 	@Override
-	public ProductInfo updateProductInfo(ProductInfo updatedProdInfo) throws NoSuchElementException{
+	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile imageFile) throws NoSuchElementException{
+		ProductInfo productInfo = mapJsonToProductInfo(updatedProdInfoJsonString);
+		Image updatedImg = imageService.createImageObject(productInfo.getProduct().getId(), imageFile);
 		try {
-			restTemplate.put(this.productUrl, updatedProdInfo.getProduct());
-			restTemplate.put(this.stockUrl, updatedProdInfo.getStock());
-			return getProductInfo(updatedProdInfo.getProduct().getId());
+			//Change all restTemplate calls to exchange to get http response
+			//Update Product using product-service
+			restTemplate.put(this.productUrl, productInfo.getProduct());
+			//Update Stock using stock-service
+			restTemplate.put(this.stockUrl, productInfo.getStock());
+			//Update Image using image-service
+			if(imageFile != null) {
+				restTemplate.put(this.imageUrl + "/" + productInfo.getProduct().getId(), updatedImg);
+			}
+			return getProductInfo(productInfo.getProduct().getId());
 		}catch(HttpStatusCodeException e) {
 			throw new NoSuchElementException(e.getMessage());
 		}
@@ -210,6 +240,41 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		Stock savedStock = response.getBody();
 		return savedStock;
 	}
+	
+	@Override
+	public Image saveImage(int productId, Image image) {
+		HttpHeaders headers = new HttpHeaders();
+		
+		//Image file is not being sent properly to image service!!!!
+		
+		HttpEntity<Image> httpEntity = new HttpEntity<Image>(image, null);
+		
+		ResponseEntity<Image> imgResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, httpEntity, Image.class);
+		
+		Image img = imgResponse.getBody();
+		
+		return img;
+	}
+	
+	@Override
+	public ProductInfo mapJsonToProductInfo(String json) {
+		ProductInfo productInfo = null;
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			 productInfo = mapper.readValue(json, ProductInfo.class);
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return productInfo;
+		
+		
+	}
+	
+	
 
 	
 

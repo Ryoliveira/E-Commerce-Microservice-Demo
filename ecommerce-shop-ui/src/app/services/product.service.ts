@@ -17,37 +17,27 @@ export class ProductService {
   private apiGatewayUrl = 'http://localhost:9020/api';
   private productListUrl = `${this.apiGatewayUrl}/inventory/products`;
   private productInfoUrl = `${this.apiGatewayUrl}/inventory/productInfo`;
-  private productInfoImageUrl = `${this.apiGatewayUrl}/inventory/productInfo`;
-  private imageUrl = `${this.apiGatewayUrl}/p/image`;
-
 
   constructor(private httpClient: HttpClient, private domSanitizer : DomSanitizer) { }
 
 
-  saveProduct( productInfo : ProductInfo) : Observable<ProductInfo> {
-    return this.httpClient.post<ProductInfo>(this.productInfoUrl, productInfo);
+  saveProduct( productInfo : ProductInfo, imgFile : File) : Observable<ProductInfo> {
+    let formData = new FormData();
+    formData.append("productInfo", JSON.stringify(productInfo));
+    formData.append("file", imgFile);
+    return this.httpClient.post<ProductInfo>(this.productInfoUrl, formData);
   }
 
-  saveImg(productId : number,  imgFile : File) : Observable<Image> {
-    let params = new FormData();
-    params.append("file", imgFile);
-    let url = `${this.imageUrl}/${productId}`;
-    return this.httpClient.post<Image>(url, params);
-  }
-
-  updateImage(productId : number, imgFile : File) : Observable<Image>  {
-    let params = new FormData();
-    params.append("file", imgFile);
-    let url = `${this.imageUrl}/${productId}`;
-    return this.httpClient.put<Image>(url, params);
-  }
   deleteProduct(productId : Number){
-    let deleteProducturl = `${this.productInfoUrl}/${productId}`;
-    this.httpClient.delete(deleteProducturl).subscribe(() => alert("Product has been deleted"));
+    let deleteProductUrl = `${this.productInfoUrl}/${productId}`;
+    this.httpClient.delete(deleteProductUrl).subscribe(() => alert("Product has been deleted"));
   }
 
-  updateProduct(productInfo : ProductInfo) {
-   this.httpClient.put(this.productInfoUrl, productInfo).subscribe(() => alert(`${productInfo.product.name} has been updated`));
+  updateProduct(productInfo : ProductInfo, imgFile: File) {
+    let formData = new FormData();
+    formData.append("productInfo", JSON.stringify(productInfo));
+    formData.append("file", imgFile);
+    this.httpClient.put<ProductInfo>(this.productInfoUrl, formData).subscribe(() => alert(`${productInfo.product.name} has been updated`));
   }
 
 
