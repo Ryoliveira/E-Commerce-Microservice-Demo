@@ -97,10 +97,9 @@ submitProduct() : void {
   let product : Product = this.productInfoFormGroup.controls["product"].value;
   let stock : Stock = this.productInfoFormGroup.controls["stock"].value;
   let category : Category = this.productInfoFormGroup.controls["category"].value;
-  // product info will get a null image since it is sent seperatly 
+  // product info will get a null image since it is sent separately
   let productInfo : ProductInfo = new ProductInfo(product, stock, category, new Image());
 
-  // This is a temporary fix
   if(productInfo.product.categoryId == 0){
     productInfo.product.categoryId = category.categoryId;
   }
@@ -109,12 +108,13 @@ submitProduct() : void {
 
   // if product id null, new product is attempting to be saved
   if(productInfo.product.id == null){
-    this.productService.saveProduct(productInfo, this.imageFile).subscribe(productInfo => {
+    this.productService.saveProduct(productInfo, this.imageFile).subscribe(() => {
       this.redirectToProductsPage();
     });
   }else{
-    this.productService.updateProduct(productInfo, this.imageFile);
-    this.redirectToProductsPage();
+    this.productService.updateProduct(productInfo, this.imageFile).subscribe(() => {
+      this.redirectToProductsPage();
+    });
   }
 }
 

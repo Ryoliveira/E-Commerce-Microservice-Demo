@@ -33,11 +33,11 @@ export class ProductService {
     this.httpClient.delete(deleteProductUrl).subscribe(() => alert("Product has been deleted"));
   }
 
-  updateProduct(productInfo : ProductInfo, imgFile: File) {
+  updateProduct(productInfo : ProductInfo, imgFile: File) : Observable<ProductInfo> {
     let formData = new FormData();
     formData.append("productInfo", JSON.stringify(productInfo));
     formData.append("file", imgFile);
-    this.httpClient.put<ProductInfo>(this.productInfoUrl, formData).subscribe(() => alert(`${productInfo.product.name} has been updated`));
+    return this.httpClient.put<ProductInfo>(this.productInfoUrl, formData);
   }
 
 

@@ -82,15 +82,15 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	@Override
 	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile imageFile) throws NoSuchElementException{
 		ProductInfo productInfo = mapJsonToProductInfo(updatedProdInfoJsonString);
-		Image updatedImg = imageService.createImageObject(productInfo.getProduct().getId(), imageFile);
 		try {
-			//Change all restTemplate calls to exchange to get http response
+			//TODO Change all restTemplate calls to exchange to get http response
 			//Update Product using product-service
 			restTemplate.put(this.productUrl, productInfo.getProduct());
 			//Update Stock using stock-service
 			restTemplate.put(this.stockUrl, productInfo.getStock());
 			//Update Image using image-service
 			if(imageFile != null) {
+				Image updatedImg = imageService.createImageObject(productInfo.getProduct().getId(), imageFile);
 				restTemplate.put(this.imageUrl + "/" + productInfo.getProduct().getId(), updatedImg);
 			}
 			return getProductInfo(productInfo.getProduct().getId());

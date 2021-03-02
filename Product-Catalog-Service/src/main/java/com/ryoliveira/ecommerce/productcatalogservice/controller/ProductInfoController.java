@@ -38,8 +38,8 @@ public class ProductInfoController {
 		return new ResponseEntity<>(prodInfoService.saveProductInfo(productInfoJsonString, imageFile), HttpStatus.OK);
 	}
 
-	@PutMapping("/productInfo")
-	private ResponseEntity<ProductInfo> updateProductInfo(@RequestPart("productInfo") String updatedProdInfoJsonString, @RequestPart("file") MultipartFile imageFile) {
+	@PutMapping(path="/productInfo", consumes= {"multipart/form-data"})
+	private ResponseEntity<ProductInfo> updateProductInfo(@RequestPart("productInfo") String updatedProdInfoJsonString, @RequestPart(name="file", required=false) MultipartFile imageFile) {
 		return new ResponseEntity<>(prodInfoService.updateProductInfo(updatedProdInfoJsonString, imageFile), HttpStatus.OK);
 	}
 
@@ -60,13 +60,13 @@ public class ProductInfoController {
 	}
 
 	@GetMapping("/products/{categoryId}")
-	private ProductInfoList getAllProductsByCategoryId(@PathVariable("categoryId") int categoryId) {
-		return prodInfoService.getAllProductsByCategoryId(categoryId);
+	private ResponseEntity<ProductInfoList> getAllProductsByCategoryId(@PathVariable("categoryId") int categoryId) {
+		return new ResponseEntity<>(prodInfoService.getAllProductsByCategoryId(categoryId), HttpStatus.OK);
 	}
 
 	@GetMapping("/categories")
-	private CategoryList getAllCategories() {
-		return prodInfoService.getAllCategories();
+	private ResponseEntity<CategoryList> getAllCategories() {
+		return new ResponseEntity<>(prodInfoService.getAllCategories(), HttpStatus.OK);
 	}
 
 }
