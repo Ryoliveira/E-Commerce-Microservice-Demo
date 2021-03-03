@@ -29,6 +29,9 @@
         </tr>
     </tbody>
 </table>
+<div *ngIf="productInfoList.length == 0">
+    <p></p><strong>No Products to display</strong><p>
+</div>
 <div>
     <a routerLink="/add-product" class="btn btn-primary">Add Product</a>
     &nbsp;

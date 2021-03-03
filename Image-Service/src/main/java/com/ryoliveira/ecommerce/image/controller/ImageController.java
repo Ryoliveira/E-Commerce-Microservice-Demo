@@ -1,7 +1,5 @@
 package com.ryoliveira.ecommerce.image.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +16,6 @@ import com.ryoliveira.ecommerce.image.service.ImageService;
 @RestController
 public class ImageController {
 	
-	Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
-	
 	@Autowired
 	private ImageService imageService;
 	
@@ -29,13 +25,13 @@ public class ImageController {
 	}
 	
 	@GetMapping("/image/{productId}")
-	private Image getImage(@PathVariable("productId") int productId) {
-		return imageService.getImage(productId);
+	private ResponseEntity<Image> getImage(@PathVariable("productId") int productId) {
+		return new ResponseEntity<Image>(imageService.getImage(productId), HttpStatus.OK);
 	}
 	
 	@PutMapping("/image/{productId}")
-	private Image updateImage(@RequestBody Image updatedImg, @PathVariable("productId") int productId) {
-		return imageService.updateImage(updatedImg, productId);
+	private ResponseEntity<Image> updateImage(@RequestBody Image updatedImg, @PathVariable("productId") int productId) {
+		return new ResponseEntity<Image>(imageService.updateImage(updatedImg, productId), HttpStatus.OK);
 	}
 	
 
