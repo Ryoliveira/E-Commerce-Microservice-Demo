@@ -3,6 +3,7 @@ package com.ryoliveira.ecommerce.image.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,12 @@ public class ImageController {
 	@PutMapping("/image/{productId}")
 	private ResponseEntity<Image> updateImage(@RequestBody Image updatedImg, @PathVariable("productId") int productId) {
 		return new ResponseEntity<Image>(imageService.updateImage(updatedImg, productId), HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/image/{productId}")
+	private ResponseEntity<String> deleteImage(@PathVariable("productId") int productId){
+		imageService.deleteImage(productId);
+		return new ResponseEntity<String>("Image for product id: " + productId + " has been deleted", HttpStatus.OK);
 	}
 	
 

@@ -1,15 +1,11 @@
 package com.ryoliveira.ecommerce.image.service;
 
-import java.io.IOException;
-import java.util.Base64;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.ryoliveira.ecommerce.image.dao.ImageRepository;
 import com.ryoliveira.ecommerce.image.exception.ImageNotFoundException;
@@ -25,15 +21,16 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	public Image saveImage(Image img) {
+		LOGGER.info(String.format("Saving Photo ==== | Filename: %s | File Type: %s", img.getFileName(), img.getFileType()));
 		return imageRepo.save(img);
 	}
 
 	@Override
 	public Image getImage(int productId) {
 		Optional<Image> optional = imageRepo.findById(productId);
-		Image img = new Image();
-		img = optional
+		Image img = optional
 				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + productId + " was found"));
+		LOGGER.info(String.format("Pulling Photo with id: %d | Filename: %s | File Type: %s", img.getProductId(), img.getFileName(), img.getFileType()));
 		return img;
 	}
 
@@ -44,12 +41,24 @@ public class ImageServiceImpl implements ImageService {
 
 		img = optional
 				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + productId + " was found"));
+		//Log original img data
+		LOGGER.info(String.format("Original Image Data ==== Filename: %s | File Type: %s", img.getFileName(), img.getFileType()));
+		
+		//Update img data
 		img.setFileName(updatedImg.getFileName());
 		img.setFileType(updatedImg.getFileType());
 		img.setImage(updatedImg.getImage());
 		imageRepo.save(img);
-
+		
+		//Log updated img data
+		LOGGER.info(String.format("Updated Image Data ==== Filename: %s | File Type: %s", img.getFileName(), img.getFileType()));
 		return img;
+	}
+	
+	@Override
+	public void deleteImage(int productId) {
+		imageRepo.deleteById(productId);
+		LOGGER.info(String.format("Delete image with product id: %d", productId));
 	}
 
 }

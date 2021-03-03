@@ -10,5 +10,7 @@ public interface ImageService {
 	
 	Image updateImage(Image img, int productId);
 	
+	void deleteImage(int productId);
+	
 
 }
