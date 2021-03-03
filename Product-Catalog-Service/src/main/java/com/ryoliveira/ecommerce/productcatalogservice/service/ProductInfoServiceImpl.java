@@ -83,15 +83,20 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile imageFile) throws NoSuchElementException{
 		ProductInfo productInfo = mapJsonToProductInfo(updatedProdInfoJsonString);
 		try {
-			//TODO Change all restTemplate calls to exchange to get http response
 			//Update Product using product-service
-			restTemplate.put(this.productUrl, productInfo.getProduct());
+			HttpEntity<Product> productEntity = new HttpEntity<>(productInfo.getProduct(), null);
+			ResponseEntity<Product> productServiceResponse = restTemplate.exchange(this.productUrl, HttpMethod.PUT, productEntity, Product.class);
+			LOGGER.info("Product-Service Response: Code -- " + productServiceResponse.getStatusCodeValue() + " | Updated Product: " + productServiceResponse.getBody().toString());
 			//Update Stock using stock-service
-			restTemplate.put(this.stockUrl, productInfo.getStock());
-			//Update Image using image-service
-			if(imageFile != null) {
+			HttpEntity<Stock> stockEntity = new HttpEntity<>(productInfo.getStock(), null);
+			ResponseEntity<Stock> stockServiceResponse = restTemplate.exchange(this.stockUrl, HttpMethod.PUT, stockEntity, Stock.class);
+			LOGGER.info("Stock-Service Response: Code -- " + stockServiceResponse.getStatusCodeValue() + " | Updated Stock: " + stockServiceResponse.getBody().toString());
+			//Update Image using image-service if not null
+			if(imageFile != null) {				
 				Image updatedImg = imageService.createImageObject(productInfo.getProduct().getId(), imageFile);
-				restTemplate.put(this.imageUrl + "/" + productInfo.getProduct().getId(), updatedImg);
+				HttpEntity<Image> imageEntity = new HttpEntity<>(updatedImg, null);
+				ResponseEntity<Image> imageServiceResponse = restTemplate.exchange(this.imageUrl + "/" + productInfo.getProduct().getId(), HttpMethod.PUT, imageEntity, Image.class);
+				LOGGER.info("Image-Service Response: Code -- " + imageServiceResponse.getStatusCodeValue() + " | Updated Image: File Name --" + imageServiceResponse.getBody().getFileName() + " | File Type: " + imageServiceResponse.getBody().getFileType());
 			}
 			return getProductInfo(productInfo.getProduct().getId());
 		}catch(HttpStatusCodeException e) {
@@ -103,17 +108,20 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	public void deleteProduct(int prodId) throws NoSuchElementException{
 		String deleteProductUrl = this.productUrl + "/" + prodId;
 		String deleteStockUrl = this.stockUrl + "/" + prodId;
+		String deleteImageUrl = this.imageUrl + "/" + prodId;
 		
 		try {
 			//Delete Product using product service
 			ResponseEntity<String> productServiceResponse = restTemplate.exchange(deleteProductUrl, HttpMethod.DELETE, null, String.class);
-			String productResponseMsg = productServiceResponse.getBody();
-			LOGGER.info(productResponseMsg + " | Status Code: " + productServiceResponse.getStatusCode());
+			LOGGER.info("Product-Service: " + productServiceResponse.getBody() + " | Status Code: " + productServiceResponse.getStatusCode());
 			
 			//Delete stock using stock service
 			ResponseEntity<String> stockServiceResponse = restTemplate.exchange(deleteStockUrl, HttpMethod.DELETE, null, String.class);
-			String stockResponseMsg = stockServiceResponse.getBody();
-			LOGGER.info(stockResponseMsg + " | Status Code: " + stockServiceResponse.getStatusCode()) ;
+			LOGGER.info("Stock-Service: " + stockServiceResponse.getBody() + " | Status Code: " + stockServiceResponse.getStatusCode());
+			
+			//Delete image using image service
+			ResponseEntity<String> imageServiceResponse = restTemplate.exchange(deleteImageUrl, HttpMethod.DELETE, null, String.class);
+			LOGGER.info("Image-Service: " + imageServiceResponse.getBody() + " | Status Code: " + imageServiceResponse.getStatusCode());
 		}catch(HttpStatusCodeException e) {
 			throw new NoSuchElementException(e.getMessage());
 		}
