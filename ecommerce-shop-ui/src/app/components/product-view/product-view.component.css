@@ -13,8 +13,21 @@
 }
 
 
-.product-image {
+.product-image-main {
     height: 300px;
     width: auto;
     border: 3px solid black;
+}
+
+.product-image-additonal {
+    height: 50px;
+    width: auto;
+    border: 3px solid black;
+    flex: 33.33%;
+    padding: 5px;
+}
+
+.image-row {
+    display: flex;
+    flex-direction: column;
 }

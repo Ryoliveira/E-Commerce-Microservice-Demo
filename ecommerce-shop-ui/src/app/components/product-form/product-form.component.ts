@@ -16,7 +16,7 @@ import { Image } from 'src/app/common/image';
 })
 export class ProductFormComponent implements OnInit {
 productInfoFormGroup : FormGroup;
-imageFile : File = null;
+imageFiles : File[] = null;
 
 categories : Category[];
 
@@ -72,7 +72,7 @@ createUpdateForm() : void {
   let productId : number = +this.route.snapshot.paramMap.get('id');
   
   this.productService.getProduct(productId).subscribe(data => {
-    let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category, data.img);
+    let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category, data.imgList);
 
     //populate product portion of form
     this.productId.setValue(productInfo.product.id);
@@ -98,7 +98,7 @@ submitProduct() : void {
   let stock : Stock = this.productInfoFormGroup.controls["stock"].value;
   let category : Category = this.productInfoFormGroup.controls["category"].value;
   // product info will get a null image since it is sent separately
-  let productInfo : ProductInfo = new ProductInfo(product, stock, category, new Image());
+  let productInfo : ProductInfo = new ProductInfo(product, stock, category, null);
 
   if(productInfo.product.categoryId == 0){
     productInfo.product.categoryId = category.categoryId;
@@ -108,13 +108,13 @@ submitProduct() : void {
 
   // if product id null, new product is attempting to be saved
   if(productInfo.product.id == null){
-    this.productService.saveProduct(productInfo, this.imageFile).subscribe(() => {
+    this.productService.saveProduct(productInfo, this.imageFiles).subscribe(() => {
       this.redirectToProductsPage();
     });
   }else{
-    this.productService.updateProduct(productInfo, this.imageFile).subscribe(() => {
-      this.redirectToProductsPage();
-    });
+    // this.productService.updateProduct(productInfo, this.imageFiles).subscribe(() => {
+    //   this.redirectToProductsPage();
+    // });
   }
 }
 
@@ -125,7 +125,13 @@ populateCategories() : void {
 }
 
 onImageSelected(event) : void {
-  this.imageFile = event.target.files[0];
+  this.imageFiles = [];
+  if(event.target.files){
+    for(let i = 0; i < event.target.files.length; i++){
+      this.imageFiles.push(event.target.files[i]);
+    }
+  }
+ 
 }
 
 onCategoryChange(categoryId : number) : void {

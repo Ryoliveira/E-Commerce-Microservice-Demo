@@ -1,5 +1,7 @@
 package com.ryoliveira.ecommerce.productcatalogservice.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
@@ -34,10 +32,12 @@ public class ProductInfoController {
 	private ProductInfoService prodInfoService;
 
 	@PostMapping(path="/productInfo", consumes= {"multipart/form-data"})
-	private ResponseEntity<ProductInfo> saveProductInfo(@RequestPart("productInfo") String productInfoJsonString, @RequestPart("file") MultipartFile imageFile) {
-		return new ResponseEntity<>(prodInfoService.saveProductInfo(productInfoJsonString, imageFile), HttpStatus.OK);
+	private ResponseEntity<ProductInfo> saveProductInfo(@RequestPart("productInfo") String productInfoJsonString, @RequestPart(name="files", required=false) List<MultipartFile> imageFiles) {
+		return new ResponseEntity<>(prodInfoService.saveProductInfo(productInfoJsonString, imageFiles), HttpStatus.OK);
 	}
 
+	
+	//TODO needs an update with list of images
 	@PutMapping(path="/productInfo", consumes= {"multipart/form-data"})
 	private ResponseEntity<ProductInfo> updateProductInfo(@RequestPart("productInfo") String updatedProdInfoJsonString, @RequestPart(name="file", required=false) MultipartFile imageFile) {
 		return new ResponseEntity<>(prodInfoService.updateProductInfo(updatedProdInfoJsonString, imageFile), HttpStatus.OK);

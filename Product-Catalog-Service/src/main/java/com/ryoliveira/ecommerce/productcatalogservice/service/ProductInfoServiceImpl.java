@@ -8,21 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -58,27 +53,29 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	private String categoryUrl = String.format("http://%s/category", CATEGORY_SERVICE);
 	private String allCategoriesUrl = String.format("http://%s/categories", CATEGORY_SERVICE);;
 	private String imageUrl = String.format("http://%s/image", IMAGE_SERVICE);
+	private String allProductImagesUrl = String.format("http://%s/images", IMAGE_SERVICE);
 	
 	
 	Logger LOGGER = LoggerFactory.getLogger(ProductInfoServiceImpl.class);
 	
 
 	@Override
-	public ProductInfo saveProductInfo(String productInfoJsonString, MultipartFile imageFile) {
+	public ProductInfo saveProductInfo(String productInfoJsonString, List<MultipartFile> imageFiles) {
 		ProductInfo productInfo = mapJsonToProductInfo(productInfoJsonString);
 		Product product = saveProduct(productInfo.getProduct());
 		Stock stock = saveStock(product.getId(), productInfo.getStock());
 		Category category = getProductCategory(product.getCategoryId());
 		
-		//save image
-		Image img = imageService.createImageObject(product.getId(), imageFile);
-		Image productImg = saveImage(product.getId(), img);
+		//save images
+		List<Image> productImages = saveImages(product.getId(), imageFiles);
 		
 		
-		ProductInfo savedProduct = new ProductInfo(product, stock, category, productImg);
+		ProductInfo savedProduct = new ProductInfo(product, stock, category, productImages);
 		return savedProduct;
 	}
 
+	
+	//TODO Update method to work with list of images
 	@Override
 	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile imageFile) throws NoSuchElementException{
 		ProductInfo productInfo = mapJsonToProductInfo(updatedProdInfoJsonString);
@@ -108,7 +105,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	public void deleteProduct(int prodId) throws NoSuchElementException{
 		String deleteProductUrl = this.productUrl + "/" + prodId;
 		String deleteStockUrl = this.stockUrl + "/" + prodId;
-		String deleteImageUrl = this.imageUrl + "/" + prodId;
+		String deleteImagesUrl = this.allProductImagesUrl + "/" + prodId;
 		
 		try {
 			//Delete Product using product service
@@ -119,8 +116,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			ResponseEntity<String> stockServiceResponse = restTemplate.exchange(deleteStockUrl, HttpMethod.DELETE, null, String.class);
 			LOGGER.info("Stock-Service: " + stockServiceResponse.getBody() + " | Status Code: " + stockServiceResponse.getStatusCode());
 			
-			//Delete image using image service
-			ResponseEntity<String> imageServiceResponse = restTemplate.exchange(deleteImageUrl, HttpMethod.DELETE, null, String.class);
+			//Delete images using image service
+			ResponseEntity<String> imageServiceResponse = restTemplate.exchange(deleteImagesUrl, HttpMethod.DELETE, null, String.class);
 			LOGGER.info("Image-Service: " + imageServiceResponse.getBody() + " | Status Code: " + imageServiceResponse.getStatusCode());
 		}catch(HttpStatusCodeException e) {
 			throw new NoSuchElementException(e.getMessage());
@@ -135,8 +132,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			Product product = getProduct(prodId);
 			Stock stock = getProductStock(prodId);
 			Category category = getProductCategory(product.getCategoryId());
-			Image img = getProductImage(product.getId());
-			return new ProductInfo(product, stock, category, img);
+			List<Image> images = getProductImages(product.getId());
+			return new ProductInfo(product, stock, category, images);
 		}catch(HttpStatusCodeException e) {
 			throw new NoSuchElementException(e.getMessage());
 		}
@@ -158,8 +155,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		products.stream().forEach(product -> {
 			Stock stock = getProductStock(product.getId());
 			Category category = getProductCategory(product.getCategoryId());
-			Image img = getProductImage(product.getId());
-			productInfoList.add(new ProductInfo(product, stock, category, img));
+			List<Image> images = getProductImages(product.getId());
+			productInfoList.add(new ProductInfo(product, stock, category, images));
 		});
 
 		return new ProductInfoList(productInfoList);
@@ -185,8 +182,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		products.stream().forEach(product -> {
 			Stock stock = getProductStock(product.getId());
 			Category category = getProductCategory(product.getCategoryId());
-			Image img = getProductImage(product.getId());
-			productInfoList.add(new ProductInfo(product, stock, category, img));
+			List<Image> images = getProductImages(product.getId());
+			productInfoList.add(new ProductInfo(product, stock, category, images));
 		});
 
 		return new ProductInfoList(productInfoList);
@@ -214,14 +211,16 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	}
 	
 	@Override
-	public Image getProductImage(int prodId) {
-		return restTemplate.getForObject(this.imageUrl + "/" + prodId, Image.class);
+	public List<Image> getProductImages(int prodId) {
+		ResponseEntity<List<Image>> response = restTemplate.exchange(this.allProductImagesUrl + "/" + prodId, HttpMethod.GET, null, new ParameterizedTypeReference<List<Image>>(){});
+		return response.getBody();
 	}
 	
 	
-	public ProductInfo getProductInfoFallBack(int prodId, Exception e) {
-		return new ProductInfo(new Product(), new Stock(), new Category(), new Image());
-	}
+	
+//	public ProductInfo getProductInfoFallBack(int prodId, Exception e) {
+//		return new ProductInfo(new Product(), new Stock(), new Category(), new Image());
+//	}
 	
 	
     public ProductInfo getProductRateLimiterFallback(Throwable t) {
@@ -250,18 +249,24 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	}
 	
 	@Override
-	public Image saveImage(int productId, Image image) {
-		HttpHeaders headers = new HttpHeaders();
+	public List<Image> saveImages(int productId, List<MultipartFile> imageFiles) {
 		
-		//Image file is not being sent properly to image service!!!!
+		List<Image> savedImages = new ArrayList<>();
 		
-		HttpEntity<Image> httpEntity = new HttpEntity<Image>(image, null);
+		for(MultipartFile imageFile : imageFiles) {
+			
+			Image imgToBeSaved = imageService.createImageObject(productId, imageFile);
+			
+			HttpEntity<Image> httpEntity = new HttpEntity<Image>(imgToBeSaved, null);
+			
+			ResponseEntity<Image> imgResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, httpEntity, Image.class);
+			
+			Image savedImage = imgResponse.getBody();
+			
+			savedImages.add(savedImage);
+		}
 		
-		ResponseEntity<Image> imgResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, httpEntity, Image.class);
-		
-		Image img = imgResponse.getBody();
-		
-		return img;
+		return savedImages;
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package com.ryoliveira.ecommerce.image.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -26,21 +27,21 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public Image getImage(int productId) {
-		Optional<Image> optional = imageRepo.findById(productId);
+	public Image getImage(int imageId) {
+		Optional<Image> optional = imageRepo.findById(imageId);
 		Image img = optional
-				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + productId + " was found"));
+				.orElseThrow(() -> new ImageNotFoundException("No Image with id:" + imageId + " was found"));
 		LOGGER.info(String.format("Pulling Photo with id: %d | Filename: %s | File Type: %s", img.getProductId(), img.getFileName(), img.getFileType()));
 		return img;
 	}
 
 	@Override
-	public Image updateImage(Image updatedImg, int productId) throws ImageNotFoundException {
-		Optional<Image> optional = imageRepo.findById(productId);
+	public Image updateImage(Image updatedImg, int imageId) throws ImageNotFoundException {
+		Optional<Image> optional = imageRepo.findById(imageId);
 		Image img = new Image();
 
 		img = optional
-				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + productId + " was found"));
+				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + imageId + " was found"));
 		//Log original img data
 		LOGGER.info(String.format("Original Image Data ==== Filename: %s | File Type: %s", img.getFileName(), img.getFileType()));
 		
@@ -56,9 +57,25 @@ public class ImageServiceImpl implements ImageService {
 	}
 	
 	@Override
-	public void deleteImage(int productId) {
-		imageRepo.deleteById(productId);
-		LOGGER.info(String.format("Delete image with product id: %d", productId));
+	public void deleteImage(int imageId) {
+		imageRepo.deleteByProductId(imageId);
+		LOGGER.info(String.format("Delete image with id: %d", imageId));
+	}
+
+	@Override
+	public void deleteImagesWithProductId(int productId) {
+		List<Image> deletedImages = imageRepo.deleteByProductId(productId);
+		
+		deletedImages.stream().forEach(image -> LOGGER.info("Deleted image with id: " + image.getId() + " -- " + image.getFileName()));
+		
+		LOGGER.info(String.format("Deleted images with product id: %d", productId));
+	}
+
+	@Override
+	public List<Image> getAllProductImages(int productId) throws ImageNotFoundException {
+		Optional<List<Image>> optionalList = imageRepo.findByProductId(productId);
+		List<Image> productImages = optionalList.orElseThrow(()->  new ImageNotFoundException("No Images with product id:" + productId + " was found"));
+		return productImages;
 	}
 
 }

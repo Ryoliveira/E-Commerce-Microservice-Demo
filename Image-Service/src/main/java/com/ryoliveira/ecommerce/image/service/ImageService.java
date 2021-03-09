@@ -1,5 +1,7 @@
 package com.ryoliveira.ecommerce.image.service;
 
+import java.util.List;
+
 import com.ryoliveira.ecommerce.image.model.Image;
 
 public interface ImageService {
@@ -8,9 +10,13 @@ public interface ImageService {
 	
 	Image getImage(int productId);
 	
-	Image updateImage(Image img, int productId);
+	Image updateImage(Image img, int imageId);
 	
-	void deleteImage(int productId);
+	void deleteImage(int imageId);
+	
+	void deleteImagesWithProductId(int productId);
+	
+	List<Image> getAllProductImages(int productId);
 	
 
 }

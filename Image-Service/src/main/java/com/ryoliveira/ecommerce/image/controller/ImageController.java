@@ -1,5 +1,7 @@
 package com.ryoliveira.ecommerce.image.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,9 @@ public class ImageController {
 		return new ResponseEntity<Image>(imageService.saveImage(img), HttpStatus.OK);
 	}
 	
-	@GetMapping("/image/{productId}")
-	private ResponseEntity<Image> getImage(@PathVariable("productId") int productId) {
-		return new ResponseEntity<Image>(imageService.getImage(productId), HttpStatus.OK);
+	@GetMapping("/image/{imageId}")
+	private ResponseEntity<Image> getImage(@PathVariable("imageId") int imageId) {
+		return new ResponseEntity<Image>(imageService.getImage(imageId), HttpStatus.OK);
 	}
 	
 	@PutMapping("/image/{productId}")
@@ -35,10 +37,21 @@ public class ImageController {
 		return new ResponseEntity<Image>(imageService.updateImage(updatedImg, productId), HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/image/{productId}")
-	private ResponseEntity<String> deleteImage(@PathVariable("productId") int productId){
-		imageService.deleteImage(productId);
-		return new ResponseEntity<String>("Image for product id: " + productId + " has been deleted", HttpStatus.OK);
+	@DeleteMapping("/image/{imageId}")
+	private ResponseEntity<String> deleteImage(@PathVariable("imageId") int imageId){
+		imageService.deleteImage(imageId);
+		return new ResponseEntity<String>("Image with id: " + imageId + " has been deleted", HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/images/{productId}")
+	private ResponseEntity<String> deleteImagesWithProductId(@PathVariable("productId") int productId){
+		imageService.deleteImagesWithProductId(productId);
+		return new ResponseEntity<String>("Images with product id: " + productId + " have been deleted", HttpStatus.OK);
+	}
+	
+	@GetMapping("/images/{productId}")
+	private ResponseEntity<List<Image>> getProductImages(@PathVariable("productId") int productId){
+		return new ResponseEntity<>(imageService.getAllProductImages(productId), HttpStatus.OK);
 	}
 	
 

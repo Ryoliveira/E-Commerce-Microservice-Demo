@@ -15,7 +15,7 @@ public class ImageServiceImpl implements ImageService {
 	public Image createImageObject(int productId, MultipartFile imageFile) {
 		Image img = null;
 		try {
-			img = new Image(productId, imageFile.getOriginalFilename(), imageFile.getContentType(),
+			img = new Image(0, productId, imageFile.getOriginalFilename(), imageFile.getContentType(),
 					Base64.getEncoder().encodeToString(imageFile.getBytes()));
 		} catch (IOException e) {
 			e.printStackTrace();

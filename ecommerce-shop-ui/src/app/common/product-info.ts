@@ -8,13 +8,13 @@ export class ProductInfo {
     product : Product;
     stock : Stock;
     category : Category;
-    img : Image;
+    imgList : Image[];
 
-    constructor(product: Product, stock: Stock, category: Category, img : Image){
+    constructor(product: Product, stock: Stock, category: Category, images : Image[]){
         this.product = product;
         this.stock = stock;
         this.category = category;
-        this.img = img;
+        this.imgList = images;
     }
 
 }
