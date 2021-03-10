@@ -14,7 +14,7 @@ import com.ryoliveira.ecommerce.productcatalogservice.model.Stock;
 
 public interface ProductInfoService {
 	
-	ProductInfo saveProductInfo(String productInfoJsonString, List<MultipartFile> imageFiles);
+	ProductInfo saveProductInfo(String productInfoJsonString, List<MultipartFile> imageFiles, MultipartFile mainProductImage);
 	
 	ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile imageFile);
 	
@@ -28,7 +28,7 @@ public interface ProductInfoService {
 	
 	Category getProductCategory(int categoryId);
 	
-	List<Image> getProductImages(int prodId);
+	List<Image> getProductImages(int prodId, boolean productMainImageOnly);
 
 	ProductInfoList getAllProducts();
 	
@@ -40,7 +40,7 @@ public interface ProductInfoService {
 	
 	Stock saveStock(int productId, Stock stock);
 	
-	List<Image> saveImages(int productId, List<MultipartFile> imageFiles);
+	List<Image> saveImages(int productId, List<MultipartFile> imageFiles, MultipartFile mainProductImage);
 	
 	ProductInfo mapJsonToProductInfo(String json);
 	

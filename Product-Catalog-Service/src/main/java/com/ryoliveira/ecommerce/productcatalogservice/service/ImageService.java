@@ -6,6 +6,6 @@ import com.ryoliveira.ecommerce.productcatalogservice.model.Image;
 
 public interface ImageService {
 	
-	Image createImageObject(int productId, MultipartFile imageFile);
+	Image createImageObject(int productId, MultipartFile imageFile, boolean isProductMainImage);
 
 }

@@ -21,15 +21,13 @@ export class ProductService {
   constructor(private httpClient: HttpClient, private domSanitizer : DomSanitizer) { }
 
 
-  saveProduct( productInfo : ProductInfo, imgFiles : File[]) : Observable<ProductInfo> {
+  saveProduct( productInfo : ProductInfo, mainProductImage : File, imgFiles : File[]) : Observable<ProductInfo> {
     let formData = new FormData();
     formData.append("productInfo", JSON.stringify(productInfo));
-
+    formData.append("mainProductImage", mainProductImage);
     for(let i = 0; i < imgFiles.length; i++){
-      formData.append("files", imgFiles[i]);
+      formData.append("additionalFiles[]", imgFiles[i]);
     }
-
-
     return this.httpClient.post<ProductInfo>(this.productInfoUrl, formData);
   }
 
@@ -83,6 +81,7 @@ interface ProductResponse {
   product : Product,
   stock : Stock,
   category: Category,
+  mainProductImage : Image,
   imgList : Image[]
 }
 

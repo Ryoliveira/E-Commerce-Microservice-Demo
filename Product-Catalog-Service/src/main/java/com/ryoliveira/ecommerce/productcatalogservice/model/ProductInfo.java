@@ -14,6 +14,7 @@ public class ProductInfo {
 	private Product product;
 	private Stock stock;
 	private Category category;
+	private Image mainProductImage;
 	private List<Image> imgList;
 
 }

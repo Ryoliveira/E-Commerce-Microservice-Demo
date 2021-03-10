@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ryoliveira.ecommerce.image.model.Image;
@@ -50,9 +51,8 @@ public class ImageController {
 	}
 	
 	@GetMapping("/images/{productId}")
-	private ResponseEntity<List<Image>> getProductImages(@PathVariable("productId") int productId){
-		return new ResponseEntity<>(imageService.getAllProductImages(productId), HttpStatus.OK);
+	private ResponseEntity<List<Image>> getProductImages(@PathVariable("productId") int productId, @RequestParam("productMainImageOnly") boolean productMainImageOnly){
+		return new ResponseEntity<>(imageService.getProductImages(productId, productMainImageOnly), HttpStatus.OK);
 	}
-	
 
 }

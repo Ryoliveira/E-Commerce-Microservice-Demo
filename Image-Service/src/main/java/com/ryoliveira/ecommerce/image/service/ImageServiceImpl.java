@@ -22,8 +22,9 @@ public class ImageServiceImpl implements ImageService {
 
 	@Override
 	public Image saveImage(Image img) {
-		LOGGER.info(String.format("Saving Photo ==== | Filename: %s | File Type: %s", img.getFileName(), img.getFileType()));
-		return imageRepo.save(img);
+		Image savedImage = imageRepo.save(img);
+		LOGGER.info(String.format("Saved Photo ==== | Filename: %s | File Type: %s | Main Product Image: %b", savedImage.getFileName(), savedImage.getFileType(), savedImage.isProductMainImage()));
+		return savedImage;
 	}
 
 	@Override
@@ -72,9 +73,12 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public List<Image> getAllProductImages(int productId) throws ImageNotFoundException {
-		Optional<List<Image>> optionalList = imageRepo.findByProductId(productId);
+	public List<Image> getProductImages(int productId, boolean productMainImageOnly) throws ImageNotFoundException {
+		Optional<List<Image>> optionalList = imageRepo.findByProductIdAndIsProductMainImage(productId, productMainImageOnly);
 		List<Image> productImages = optionalList.orElseThrow(()->  new ImageNotFoundException("No Images with product id:" + productId + " was found"));
+		productImages.stream().forEach(productImage -> {
+			LOGGER.info(String.format("Pulled Photo ==== | Filename: %s | File Type: %s | Main Product Image: %b", productImage.getFileName(), productImage.getFileType(), productImage.isProductMainImage()));
+		});
 		return productImages;
 	}
 

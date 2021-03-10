@@ -6,8 +6,8 @@
         <h1>{{ productInfo.product.name }}</h1>
     </div>
     <div>
-        <img [src]="sanitizeImgUrl(productInfo.imgList[0])" class="product-image-main">
-        <div *ngFor="let productImg of productInfo.imgList | slice:1" class="image-row">
+        <img [src]="sanitizeImgUrl(productInfo.mainProductImage)" class="product-image-main">
+        <div *ngFor="let productImg of productInfo.imgList" class="image-row">
             <img [src]="sanitizeImgUrl(productImg)" class="product-image-additonal">
         </div>
         <p><strong>Description: </strong>{{ productInfo.product.description }}</p>

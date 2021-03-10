@@ -12,10 +12,10 @@ import com.ryoliveira.ecommerce.productcatalogservice.model.Image;
 public class ImageServiceImpl implements ImageService {
 
 	@Override
-	public Image createImageObject(int productId, MultipartFile imageFile) {
+	public Image createImageObject(int productId, MultipartFile imageFile, boolean isProductMainImage) {
 		Image img = null;
 		try {
-			img = new Image(0, productId, imageFile.getOriginalFilename(), imageFile.getContentType(),
+			img = new Image(0, productId, isProductMainImage, imageFile.getOriginalFilename(), imageFile.getContentType(),
 					Base64.getEncoder().encodeToString(imageFile.getBytes()));
 		} catch (IOException e) {
 			e.printStackTrace();

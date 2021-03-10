@@ -13,6 +13,8 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
 	
 	public Optional<List<Image>> findByProductId(int productId);
 	
+	public Optional<List<Image>> findByProductIdAndIsProductMainImage(int productId, boolean isProductImage);
+	
 	@Transactional
 	public List<Image> deleteByProductId(int productId);
 	

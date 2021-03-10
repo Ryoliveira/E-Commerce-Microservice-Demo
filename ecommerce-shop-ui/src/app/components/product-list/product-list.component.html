@@ -13,7 +13,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let productInfo of productInfoList">
-            <td><img [src]="sanitizeImgUrl(productInfo.imgList[0])" height="50"></td>
+            <td><img [src]="sanitizeImgUrl(productInfo.mainProductImage)" height="50"></td>
             <td>{{ productInfo.product.name }}</td>
             <td>{{ productInfo.product.description }}</td>
             <td>{{ productInfo.product.price | currency: 'USD' }}</td>

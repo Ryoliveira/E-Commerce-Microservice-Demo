@@ -26,6 +26,9 @@ public class Image {
 	@Column(name="product_id")
 	private int productId;
 	
+	@Column(name="is_product_main_image")
+	private boolean isProductMainImage;
+	
 	@Column(name="file_name")
 	private String fileName;
 	

@@ -32,8 +32,11 @@ public class ProductInfoController {
 	private ProductInfoService prodInfoService;
 
 	@PostMapping(path="/productInfo", consumes= {"multipart/form-data"})
-	private ResponseEntity<ProductInfo> saveProductInfo(@RequestPart("productInfo") String productInfoJsonString, @RequestPart(name="files", required=false) List<MultipartFile> imageFiles) {
-		return new ResponseEntity<>(prodInfoService.saveProductInfo(productInfoJsonString, imageFiles), HttpStatus.OK);
+	private ResponseEntity<ProductInfo> saveProductInfo(@RequestPart("productInfo") String productInfoJsonString,
+			@RequestPart(name="mainProductImage", required=true) MultipartFile mainProductImage, 
+			@RequestPart(name="additionalFiles[]", required=false) List<MultipartFile> additionalFiles) {
+		
+		return new ResponseEntity<>(prodInfoService.saveProductInfo(productInfoJsonString, additionalFiles, mainProductImage), HttpStatus.OK);
 	}
 
 	

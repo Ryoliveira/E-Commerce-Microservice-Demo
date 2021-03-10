@@ -16,7 +16,8 @@ import { Image } from 'src/app/common/image';
 })
 export class ProductFormComponent implements OnInit {
 productInfoFormGroup : FormGroup;
-imageFiles : File[] = null;
+mainProductImageFile : File = null;
+addtionalImageFiles : File[] = null;
 
 categories : Category[];
 
@@ -72,7 +73,7 @@ createUpdateForm() : void {
   let productId : number = +this.route.snapshot.paramMap.get('id');
   
   this.productService.getProduct(productId).subscribe(data => {
-    let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category, data.imgList);
+    let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category, data.mainProductImage, data.imgList);
 
     //populate product portion of form
     this.productId.setValue(productInfo.product.id);
@@ -98,7 +99,7 @@ submitProduct() : void {
   let stock : Stock = this.productInfoFormGroup.controls["stock"].value;
   let category : Category = this.productInfoFormGroup.controls["category"].value;
   // product info will get a null image since it is sent separately
-  let productInfo : ProductInfo = new ProductInfo(product, stock, category, null);
+  let productInfo : ProductInfo = new ProductInfo(product, stock, category, null, null);
 
   if(productInfo.product.categoryId == 0){
     productInfo.product.categoryId = category.categoryId;
@@ -108,7 +109,7 @@ submitProduct() : void {
 
   // if product id null, new product is attempting to be saved
   if(productInfo.product.id == null){
-    this.productService.saveProduct(productInfo, this.imageFiles).subscribe(() => {
+    this.productService.saveProduct(productInfo, this.mainProductImageFile, this.addtionalImageFiles).subscribe(() => {
       this.redirectToProductsPage();
     });
   }else{
@@ -124,11 +125,15 @@ populateCategories() : void {
   })
 }
 
-onImageSelected(event) : void {
-  this.imageFiles = [];
+onMainProductImageSelect(event) : void {
+  this.mainProductImageFile = event.target.files[0];
+}
+
+onAdditionalImagesSelected(event) : void {
+  this.addtionalImageFiles = [];
   if(event.target.files){
     for(let i = 0; i < event.target.files.length; i++){
-      this.imageFiles.push(event.target.files[i]);
+      this.addtionalImageFiles.push(event.target.files[i]);
     }
   }
  
