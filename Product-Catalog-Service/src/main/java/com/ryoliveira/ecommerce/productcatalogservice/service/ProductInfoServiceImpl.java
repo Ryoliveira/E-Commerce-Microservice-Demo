@@ -82,7 +82,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	
 	//TODO Update method to work with list of images
 	@Override
-	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile imageFile) throws NoSuchElementException{
+	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile mainProductImageFile, List<MultipartFile> additionalProductImageFiles, List<String> imageIdsToDelete) throws NoSuchElementException{
 		ProductInfo productInfo = mapJsonToProductInfo(updatedProdInfoJsonString);
 		try {
 			//Update Product using product-service
@@ -93,13 +93,34 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			HttpEntity<Stock> stockEntity = new HttpEntity<>(productInfo.getStock(), null);
 			ResponseEntity<Stock> stockServiceResponse = restTemplate.exchange(this.stockUrl, HttpMethod.PUT, stockEntity, Stock.class);
 			LOGGER.info("Stock-Service Response: Code -- " + stockServiceResponse.getStatusCodeValue() + " | Updated Stock: " + stockServiceResponse.getBody().toString());
+			
+			
+			//Delete images from products if not null
+			if(imageIdsToDelete != null && imageIdsToDelete.size() != 0) {
+				List<Integer> imageIdsToDeleteInts = new ArrayList<>();
+				for(String strId : imageIdsToDelete) {
+					imageIdsToDeleteInts.add(Integer.parseInt(strId));
+				}
+				HttpEntity<List<Integer>> imagesToDeleteEntity = new HttpEntity<>(imageIdsToDeleteInts, null);
+				ResponseEntity<String> imageServiceResponse =  restTemplate.exchange(this.allProductImagesUrl, HttpMethod.DELETE, imagesToDeleteEntity, String.class);
+				LOGGER.info("Image-Service: " + imageServiceResponse.getBody() + " | Status Code: " + imageServiceResponse.getStatusCode());
+			}
 			//Update Image using image-service if not null
-//			if(imageFile != null) {				
-//				Image updatedImg = imageService.createImageObject(productInfo.getProduct().getId(), imageFile);
-//				HttpEntity<Image> imageEntity = new HttpEntity<>(updatedImg, null);
-//				ResponseEntity<Image> imageServiceResponse = restTemplate.exchange(this.imageUrl + "/" + productInfo.getProduct().getId(), HttpMethod.PUT, imageEntity, Image.class);
-//				LOGGER.info("Image-Service Response: Code -- " + imageServiceResponse.getStatusCodeValue() + " | Updated Image: File Name --" + imageServiceResponse.getBody().getFileName() + " | File Type: " + imageServiceResponse.getBody().getFileType());
-//			}
+			if(mainProductImageFile != null) {				
+				Image updatedImg = imageService.createImageObject(productInfo.getProduct().getId(), mainProductImageFile, true);
+				HttpEntity<Image> imageEntity = new HttpEntity<>(updatedImg, null);
+				ResponseEntity<Image> imageServiceResponse = restTemplate.exchange(this.imageUrl + "/" + productInfo.getProduct().getId(), HttpMethod.PUT, imageEntity, Image.class);
+				LOGGER.info("Image-Service Response: Code -- " + imageServiceResponse.getStatusCodeValue() + " | Updated Image: File Name --" + imageServiceResponse.getBody().getFileName() + " | File Type: " + imageServiceResponse.getBody().getFileType());
+			}
+			//Add additional product images if not null
+			if(additionalProductImageFiles != null && additionalProductImageFiles.size() != 0) {
+				additionalProductImageFiles.stream().forEach(imageFile -> {
+					Image additionalProductImage = imageService.createImageObject(productInfo.getProduct().getId(), imageFile, false);
+					HttpEntity<Image> additionalImageEntity = new HttpEntity<>(additionalProductImage, null);
+					ResponseEntity<Image> imageServiceResponse =  restTemplate.exchange(this.imageUrl, HttpMethod.POST, additionalImageEntity, Image.class);
+					LOGGER.info("Image-Service Response: Code -- " + imageServiceResponse.getStatusCodeValue() + " | Added Image: File Name --" + imageServiceResponse.getBody().getFileName() + " | File Type: " + imageServiceResponse.getBody().getFileType());
+				});
+			}
 			return getProductInfo(productInfo.getProduct().getId());
 		}catch(HttpStatusCodeException e) {
 			throw new NoSuchElementException(e.getMessage());
@@ -270,12 +291,14 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		savedImages.add(mainImageSaveResponse.getBody());
 		
 		// Save product addtional images
-		for(MultipartFile imageFile : imageFiles) {
-			Image imgToBeSaved = imageService.createImageObject(productId, imageFile, false);
-			HttpEntity<Image> httpEntity = new HttpEntity<Image>(imgToBeSaved, null);
-			ResponseEntity<Image> imgResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, httpEntity, Image.class);
-			Image savedImage = imgResponse.getBody();
-			savedImages.add(savedImage);
+		if(imageFiles != null) {
+			for(MultipartFile imageFile : imageFiles) {
+				Image imgToBeSaved = imageService.createImageObject(productId, imageFile, false);
+				HttpEntity<Image> httpEntity = new HttpEntity<Image>(imgToBeSaved, null);
+				ResponseEntity<Image> imgResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, httpEntity, Image.class);
+				Image savedImage = imgResponse.getBody();
+				savedImages.add(savedImage);
+			}
 		}
 		return savedImages;
 	}

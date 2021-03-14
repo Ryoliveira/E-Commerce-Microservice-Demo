@@ -29,7 +29,13 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-2"> <label>Addtitional Images</label></div>
+                <div class="col-md-2"> <label>Additional Images</label></div>
+                <div *ngIf="productToUpdate != null;">
+                    <div *ngFor="let additionalImage of productToUpdate.imgList">
+                        <img [src]="sanitizeImgUrl(additionalImage)" height="100px" width="auto">
+                        <button type="button" class="btn btn-danger" (click)="onImagesToDeleteSelected(additionalImage.id)">Remove</button>
+                    </div>
+                </div>
                 <div class="col-md-9">
                     <div class="input-space">
                         <input type="file" (change)="onAdditionalImagesSelected($event)" multiple>

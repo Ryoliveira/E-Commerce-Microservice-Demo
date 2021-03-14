@@ -34,7 +34,7 @@ public class ImageController {
 	}
 	
 	@PutMapping("/image/{productId}")
-	private ResponseEntity<Image> updateImage(@RequestBody Image updatedImg, @PathVariable("productId") int productId) {
+	private ResponseEntity<Image> updateProductMainImage(@RequestBody Image updatedImg, @PathVariable("productId") int productId) {
 		return new ResponseEntity<Image>(imageService.updateImage(updatedImg, productId), HttpStatus.OK);
 	}
 	
@@ -53,6 +53,12 @@ public class ImageController {
 	@GetMapping("/images/{productId}")
 	private ResponseEntity<List<Image>> getProductImages(@PathVariable("productId") int productId, @RequestParam("productMainImageOnly") boolean productMainImageOnly){
 		return new ResponseEntity<>(imageService.getProductImages(productId, productMainImageOnly), HttpStatus.OK);
+	}
+	
+	@DeleteMapping(path="/images", params= {"imageIdsToDelete"})
+	private ResponseEntity<String> deleteImagesById(@RequestParam("imageIdsToDelete") List<Integer> imageIdsToDelete){
+		imageService.deleteImagesByIds(imageIdsToDelete);
+		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
 
 }

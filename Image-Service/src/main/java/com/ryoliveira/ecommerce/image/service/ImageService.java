@@ -14,6 +14,8 @@ public interface ImageService {
 	
 	void deleteImage(int imageId);
 	
+	void deleteImagesByIds(List<Integer> imageIds);
+	
 	void deleteImagesWithProductId(int productId);
 	
 	List<Image> getProductImages(int productId, boolean productMainImageOnly);

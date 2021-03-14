@@ -36,10 +36,16 @@ export class ProductService {
     this.httpClient.delete(deleteProductUrl).subscribe(() => alert("Product has been deleted"));
   }
 
-  updateProduct(productInfo : ProductInfo, imgFile: File) : Observable<ProductInfo> {
+  updateProduct(productInfo : ProductInfo, mainProductImageFile: File, additionalImageFiles : File[], imagesToDelete : string[]) : Observable<ProductInfo> {
     let formData = new FormData();
     formData.append("productInfo", JSON.stringify(productInfo));
-    formData.append("file", imgFile);
+    formData.append("mainProductImage", mainProductImageFile);
+    for(let i = 0; i < additionalImageFiles.length; i++){
+      formData.append("additionalImageFiles[]", additionalImageFiles[i]);
+    }
+    for(let i = 0; i < imagesToDelete.length; i++){
+      formData.append("imagesToDelete[]", imagesToDelete[i]);
+    }
     return this.httpClient.put<ProductInfo>(this.productInfoUrl, formData);
   }
 

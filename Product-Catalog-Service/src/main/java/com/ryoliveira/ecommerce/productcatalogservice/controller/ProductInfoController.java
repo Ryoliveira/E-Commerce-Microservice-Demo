@@ -1,5 +1,6 @@
 package com.ryoliveira.ecommerce.productcatalogservice.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,15 +37,17 @@ public class ProductInfoController {
 	private ResponseEntity<ProductInfo> saveProductInfo(@RequestPart("productInfo") String productInfoJsonString,
 			@RequestPart(name="mainProductImage", required=true) MultipartFile mainProductImage, 
 			@RequestPart(name="additionalFiles[]", required=false) List<MultipartFile> additionalFiles) {
-		
 		return new ResponseEntity<>(prodInfoService.saveProductInfo(productInfoJsonString, additionalFiles, mainProductImage), HttpStatus.OK);
 	}
 
 	
-	//TODO needs an update with list of images
+	//TODO ImagesToDelete is not being consumed properly
 	@PutMapping(path="/productInfo", consumes= {"multipart/form-data"})
-	private ResponseEntity<ProductInfo> updateProductInfo(@RequestPart("productInfo") String updatedProdInfoJsonString, @RequestPart(name="file", required=false) MultipartFile imageFile) {
-		return new ResponseEntity<>(prodInfoService.updateProductInfo(updatedProdInfoJsonString, imageFile), HttpStatus.OK);
+	private ResponseEntity<ProductInfo> updateProductInfo(@RequestPart("productInfo") String updatedProdInfoJsonString, 
+			@RequestPart(name="mainProductImage", required=false) MultipartFile mainProductImage,
+			@RequestPart(name="additionalImageFiles[]", required=false) List<MultipartFile> additionalImageFiles,
+			@RequestPart(name="imagesToDelete[]", required=false) List<String> imagesToDelete) {
+		return new ResponseEntity<>(prodInfoService.updateProductInfo(updatedProdInfoJsonString, mainProductImage, additionalImageFiles, imagesToDelete), HttpStatus.OK);
 	}
 
 	@GetMapping("/productInfo/{prodId}")

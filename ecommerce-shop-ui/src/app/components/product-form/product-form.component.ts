@@ -15,9 +15,13 @@ import { Image } from 'src/app/common/image';
   styleUrls: ['./product-form.component.css']
 })
 export class ProductFormComponent implements OnInit {
+
+productToUpdate : ProductInfo = null;
+
 productInfoFormGroup : FormGroup;
 mainProductImageFile : File = null;
-addtionalImageFiles : File[] = null;
+additionalImageFiles : File[] = [];
+imagesToDelete : string[] = [];
 
 categories : Category[];
 
@@ -73,24 +77,24 @@ createUpdateForm() : void {
   let productId : number = +this.route.snapshot.paramMap.get('id');
   
   this.productService.getProduct(productId).subscribe(data => {
-    let productInfo : ProductInfo = new ProductInfo(data.product, data.stock, data.category, data.mainProductImage, data.imgList);
+    this.productToUpdate = new ProductInfo(data.product, data.stock, data.category, data.mainProductImage, data.imgList);
 
     //populate product portion of form
-    this.productId.setValue(productInfo.product.id);
-    this.name.setValue(productInfo.product.name);
-    this.description.setValue(productInfo.product.description);
-    this.price.setValue(productInfo.product.price);
+    this.productId.setValue(this.productToUpdate.product.id);
+    this.name.setValue(this.productToUpdate.product.name);
+    this.description.setValue(this.productToUpdate.product.description);
+    this.price.setValue(this.productToUpdate.product.price);
 
     //populate stock portion of form
-    this.productStockId.setValue(productInfo.stock.productId);
-    this.stock.setValue(productInfo.stock.stock);
+    this.productStockId.setValue(this.productToUpdate.stock.productId);
+    this.stock.setValue(this.productToUpdate.stock.stock);
 
     //populate category portion of form
-    this.categoryId.setValue(productInfo.category.categoryId);
-    this.categoryName.setValue(productInfo.category.name);
+    this.categoryId.setValue(this.productToUpdate.category.categoryId);
+    this.categoryName.setValue(this.productToUpdate.category.name);
 
-    console.log("Product Category Id: " + productInfo.category.categoryId);
-    console.log("Stock product id " + productInfo.stock.productId);
+    console.log("Product Category Id: " + this.productToUpdate.category.categoryId);
+    console.log("Stock product id " + this.productToUpdate.stock.productId);
   });
 }
 
@@ -109,13 +113,13 @@ submitProduct() : void {
 
   // if product id null, new product is attempting to be saved
   if(productInfo.product.id == null){
-    this.productService.saveProduct(productInfo, this.mainProductImageFile, this.addtionalImageFiles).subscribe(() => {
+    this.productService.saveProduct(productInfo, this.mainProductImageFile, this.additionalImageFiles).subscribe(() => {
       this.redirectToProductsPage();
     });
   }else{
-    // this.productService.updateProduct(productInfo, this.imageFiles).subscribe(() => {
-    //   this.redirectToProductsPage();
-    // });
+    this.productService.updateProduct(productInfo, this.mainProductImageFile, this.additionalImageFiles, this.imagesToDelete).subscribe(() => {
+      this.redirectToProductsPage();
+    });
   }
 }
 
@@ -127,16 +131,22 @@ populateCategories() : void {
 
 onMainProductImageSelect(event) : void {
   this.mainProductImageFile = event.target.files[0];
+  console.log(this.mainProductImageFile);
 }
 
 onAdditionalImagesSelected(event) : void {
-  this.addtionalImageFiles = [];
+  this.additionalImageFiles = [];
   if(event.target.files){
     for(let i = 0; i < event.target.files.length; i++){
-      this.addtionalImageFiles.push(event.target.files[i]);
+      this.additionalImageFiles.push(event.target.files[i]);
+      console.log(this.additionalImageFiles[i]);
     }
   }
- 
+}
+
+onImagesToDeleteSelected(imageId : number) : void {
+  this.imagesToDelete.push(imageId.toString());
+  console.log(this.imagesToDelete.toString());
 }
 
 onCategoryChange(categoryId : number) : void {
@@ -148,6 +158,10 @@ redirectToProductsPage(){
   .then(() => { 
     window.location.reload() 
   });
+}
+
+sanitizeImgUrl(img : Image){
+  return this.productService.sanitizeUrl(img);
 }
 
 }

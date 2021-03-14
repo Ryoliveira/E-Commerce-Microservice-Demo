@@ -37,12 +37,10 @@ public class ImageServiceImpl implements ImageService {
 	}
 
 	@Override
-	public Image updateImage(Image updatedImg, int imageId) throws ImageNotFoundException {
-		Optional<Image> optional = imageRepo.findById(imageId);
-		Image img = new Image();
-
-		img = optional
-				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + imageId + " was found"));
+	public Image updateImage(Image updatedImg, int productId) throws ImageNotFoundException {
+		Optional<List<Image>> optional = imageRepo.findByProductIdAndIsProductMainImage(productId, true);	
+		Image img = optional
+				.orElseThrow(() -> new ImageNotFoundException("No Image with product id:" + productId + " was found")).get(0);
 		//Log original img data
 		LOGGER.info(String.format("Original Image Data ==== Filename: %s | File Type: %s", img.getFileName(), img.getFileType()));
 		
@@ -66,9 +64,7 @@ public class ImageServiceImpl implements ImageService {
 	@Override
 	public void deleteImagesWithProductId(int productId) {
 		List<Image> deletedImages = imageRepo.deleteByProductId(productId);
-		
 		deletedImages.stream().forEach(image -> LOGGER.info("Deleted image with id: " + image.getId() + " -- " + image.getFileName()));
-		
 		LOGGER.info(String.format("Deleted images with product id: %d", productId));
 	}
 
@@ -80,6 +76,14 @@ public class ImageServiceImpl implements ImageService {
 			LOGGER.info(String.format("Pulled Photo ==== | Filename: %s | File Type: %s | Main Product Image: %b", productImage.getFileName(), productImage.getFileType(), productImage.isProductMainImage()));
 		});
 		return productImages;
+	}
+
+	@Override
+	public void deleteImagesByIds(List<Integer> imageIds) {
+		imageIds.stream().forEach(imageId -> {
+			imageRepo.deleteById(imageId);
+			LOGGER.info("Deleted image with id: " + imageId);
+		});
 	}
 
 }

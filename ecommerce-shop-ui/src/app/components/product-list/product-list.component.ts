@@ -12,7 +12,7 @@ import { Image } from '../../common/image';
 })
 export class ProductListComponent implements OnInit {
 
-  productInfoList : ProductInfo[];
+  productInfoList : ProductInfo[] = [];
 
 
   constructor(private productService: ProductService,
