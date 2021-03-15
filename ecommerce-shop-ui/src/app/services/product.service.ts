@@ -17,6 +17,7 @@ export class ProductService {
   private apiGatewayUrl = 'http://localhost:9020/api';
   private productListUrl = `${this.apiGatewayUrl}/inventory/products`;
   private productInfoUrl = `${this.apiGatewayUrl}/inventory/productInfo`;
+  private deleteImageUrl = `${this.apiGatewayUrl}/i/images`;
 
   constructor(private httpClient: HttpClient, private domSanitizer : DomSanitizer) { }
 
@@ -36,16 +37,18 @@ export class ProductService {
     this.httpClient.delete(deleteProductUrl).subscribe(() => alert("Product has been deleted"));
   }
 
-  updateProduct(productInfo : ProductInfo, mainProductImageFile: File, additionalImageFiles : File[], imagesToDelete : string[]) : Observable<ProductInfo> {
+  deleteProductImages(imagesIdsToDelete : number[]){
+    this.httpClient.put<string>(this.deleteImageUrl, imagesIdsToDelete).subscribe();
+  }
+
+  updateProduct(productInfo : ProductInfo, mainProductImageFile: File, additionalImageFiles : File[], imagesIdsToDelete : number[]) : Observable<ProductInfo> {
     let formData = new FormData();
     formData.append("productInfo", JSON.stringify(productInfo));
     formData.append("mainProductImage", mainProductImageFile);
     for(let i = 0; i < additionalImageFiles.length; i++){
       formData.append("additionalImageFiles[]", additionalImageFiles[i]);
     }
-    for(let i = 0; i < imagesToDelete.length; i++){
-      formData.append("imagesToDelete[]", imagesToDelete[i]);
-    }
+    this.deleteProductImages(imagesIdsToDelete);
     return this.httpClient.put<ProductInfo>(this.productInfoUrl, formData);
   }
 

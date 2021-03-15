@@ -45,9 +45,8 @@ public class ProductInfoController {
 	@PutMapping(path="/productInfo", consumes= {"multipart/form-data"})
 	private ResponseEntity<ProductInfo> updateProductInfo(@RequestPart("productInfo") String updatedProdInfoJsonString, 
 			@RequestPart(name="mainProductImage", required=false) MultipartFile mainProductImage,
-			@RequestPart(name="additionalImageFiles[]", required=false) List<MultipartFile> additionalImageFiles,
-			@RequestPart(name="imagesToDelete[]", required=false) List<String> imagesToDelete) {
-		return new ResponseEntity<>(prodInfoService.updateProductInfo(updatedProdInfoJsonString, mainProductImage, additionalImageFiles, imagesToDelete), HttpStatus.OK);
+			@RequestPart(name="additionalImageFiles[]", required=false) List<MultipartFile> additionalImageFiles) {
+		return new ResponseEntity<>(prodInfoService.updateProductInfo(updatedProdInfoJsonString, mainProductImage, additionalImageFiles), HttpStatus.OK);
 	}
 
 	@GetMapping("/productInfo/{prodId}")

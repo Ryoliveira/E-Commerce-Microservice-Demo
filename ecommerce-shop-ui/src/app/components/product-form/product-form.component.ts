@@ -21,7 +21,7 @@ productToUpdate : ProductInfo = null;
 productInfoFormGroup : FormGroup;
 mainProductImageFile : File = null;
 additionalImageFiles : File[] = [];
-imagesToDelete : string[] = [];
+imagesIdsToDelete : number[] = [];
 
 categories : Category[];
 
@@ -117,7 +117,7 @@ submitProduct() : void {
       this.redirectToProductsPage();
     });
   }else{
-    this.productService.updateProduct(productInfo, this.mainProductImageFile, this.additionalImageFiles, this.imagesToDelete).subscribe(() => {
+    this.productService.updateProduct(productInfo, this.mainProductImageFile, this.additionalImageFiles, this.imagesIdsToDelete).subscribe(() => {
       this.redirectToProductsPage();
     });
   }
@@ -145,8 +145,13 @@ onAdditionalImagesSelected(event) : void {
 }
 
 onImagesToDeleteSelected(imageId : number) : void {
-  this.imagesToDelete.push(imageId.toString());
-  console.log(this.imagesToDelete.toString());
+  if(!confirm("Are you sure you want to delete this image?")) return;
+  if(!this.imagesIdsToDelete.includes(imageId)){
+    this.imagesIdsToDelete.push(imageId);
+    console.log(this.imagesIdsToDelete.toString());
+  }else{
+    alert("Image is already queued to be deleted");
+  }
 }
 
 onCategoryChange(categoryId : number) : void {

@@ -82,7 +82,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 	
 	//TODO Update method to work with list of images
 	@Override
-	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile mainProductImageFile, List<MultipartFile> additionalProductImageFiles, List<String> imageIdsToDelete) throws NoSuchElementException{
+	public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile mainProductImageFile, List<MultipartFile> additionalProductImageFiles) throws NoSuchElementException{
 		ProductInfo productInfo = mapJsonToProductInfo(updatedProdInfoJsonString);
 		try {
 			//Update Product using product-service
@@ -96,15 +96,15 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 			
 			
 			//Delete images from products if not null
-			if(imageIdsToDelete != null && imageIdsToDelete.size() != 0) {
-				List<Integer> imageIdsToDeleteInts = new ArrayList<>();
-				for(String strId : imageIdsToDelete) {
-					imageIdsToDeleteInts.add(Integer.parseInt(strId));
-				}
-				HttpEntity<List<Integer>> imagesToDeleteEntity = new HttpEntity<>(imageIdsToDeleteInts, null);
-				ResponseEntity<String> imageServiceResponse =  restTemplate.exchange(this.allProductImagesUrl, HttpMethod.DELETE, imagesToDeleteEntity, String.class);
-				LOGGER.info("Image-Service: " + imageServiceResponse.getBody() + " | Status Code: " + imageServiceResponse.getStatusCode());
-			}
+//			if(imageIdsToDelete != null && imageIdsToDelete.size() != 0) {
+//				List<Integer> imageIdsToDeleteInts = new ArrayList<>();
+//				for(String strId : imageIdsToDelete) {
+//					imageIdsToDeleteInts.add(Integer.parseInt(strId));
+//				}
+//				HttpEntity<List<Integer>> imagesToDeleteEntity = new HttpEntity<>(imageIdsToDeleteInts, null);
+//				ResponseEntity<String> imageServiceResponse =  restTemplate.exchange(this.allProductImagesUrl, HttpMethod.DELETE, imagesToDeleteEntity, String.class);
+//				LOGGER.info("Image-Service: " + imageServiceResponse.getBody() + " | Status Code: " + imageServiceResponse.getStatusCode());
+//			}
 			//Update Image using image-service if not null
 			if(mainProductImageFile != null) {				
 				Image updatedImg = imageService.createImageObject(productInfo.getProduct().getId(), mainProductImageFile, true);
@@ -179,7 +179,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		List<Product> products = responseEntity.getBody();
 
 		//Populate list with product/stock/category info
-		products.stream().forEach(product -> {
+		products.forEach(product -> {
 			Stock stock = getProductStock(product.getId());
 			Category category = getProductCategory(product.getCategoryId());
 			Image mainProductImage = getProductImages(product.getId(), true).get(0);
@@ -207,7 +207,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 		List<Product> products = responseEntity.getBody();
 
 		//Populate list with product/stock/category info
-		products.stream().forEach(product -> {
+		products.forEach(product -> {
 			Stock stock = getProductStock(product.getId());
 			Category category = getProductCategory(product.getCategoryId());
 			Image mainProductImage = getProductImages(product.getId(), true).get(0);

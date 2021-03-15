@@ -16,7 +16,7 @@ public interface ProductInfoService {
 	
 	ProductInfo saveProductInfo(String productInfoJsonString, List<MultipartFile> imageFiles, MultipartFile mainProductImage);
 	
-	ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile mainProductImageFile, List<MultipartFile> additionalProductImageFiles, List<String> imagesToDelete);
+	ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile mainProductImageFile, List<MultipartFile> additionalProductImageFiles);
 	
 	void deleteProduct(int prodId);
 	

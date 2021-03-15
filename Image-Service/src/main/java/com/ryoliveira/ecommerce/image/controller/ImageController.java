@@ -2,6 +2,8 @@ package com.ryoliveira.ecommerce.image.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import com.ryoliveira.ecommerce.image.service.ImageService;
 
 @RestController
 public class ImageController {
+
+	Logger LOGGER = LoggerFactory.getLogger(ImageController.class);
 	
 	@Autowired
 	private ImageService imageService;
@@ -55,8 +59,8 @@ public class ImageController {
 		return new ResponseEntity<>(imageService.getProductImages(productId, productMainImageOnly), HttpStatus.OK);
 	}
 	
-	@DeleteMapping(path="/images", params= {"imageIdsToDelete"})
-	private ResponseEntity<String> deleteImagesById(@RequestParam("imageIdsToDelete") List<Integer> imageIdsToDelete){
+	@PutMapping(path="/images")
+	private ResponseEntity<String> deleteImagesById(@RequestBody List<Integer> imageIdsToDelete){
 		imageService.deleteImagesByIds(imageIdsToDelete);
 		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
