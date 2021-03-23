@@ -46,7 +46,7 @@
                 <div class="col-md-2"> <label>Price</label></div>
                 <div class="col-md-9">
                     <div class="input-space">
-                        <input formControlName="price" type="number" min="1" step="any">
+                        <input formControlName="price" type="number" min="0" step="any">
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                 <div class="col-md-9">
                     <div class="input-space">
                         <input formControlName="productId" type="hidden">
-                        <input formControlName="stock" type="number">
+                        <input formControlName="stock" type="number" min="0">
                     </div>
                 </div>
             </div>

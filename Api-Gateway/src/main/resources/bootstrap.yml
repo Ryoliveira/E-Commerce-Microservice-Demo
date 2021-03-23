@@ -56,5 +56,5 @@ eureka:
     register-with-eureka: false
     fetch-registry: true
 
-server:
-  port: 9020
+#server:
+#  port: 9020
