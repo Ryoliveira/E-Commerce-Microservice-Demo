@@ -51,6 +51,8 @@ public interface ProductInfoService {
 	void updateProduct(Product product);
 
 	void updateStock(Stock stock);
+
+	List<ProductInfo> populateProductInfoList(List<Product> products);
 	
 	
 	

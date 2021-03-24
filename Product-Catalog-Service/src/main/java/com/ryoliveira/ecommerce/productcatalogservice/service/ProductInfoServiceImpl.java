@@ -130,13 +130,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
         //Populate list with product/stock/category info
         if(products != null){
-            products.forEach(product -> {
-                Stock stock = getProductStock(product.getId());
-                Category category = getProductCategory(product.getCategoryId());
-                Image mainProductImage = getProductImages(product.getId(), true).get(0);
-                List<Image> images = getProductImages(product.getId(), false);
-                productInfoList.add(new ProductInfo(product, stock, category, mainProductImage, images));
-            });
+            productInfoList = populateProductInfoList(products);
         }
         return new ProductInfoList(productInfoList);
     }
@@ -155,17 +149,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>() {
                 });
         List<Product> products = responseEntity.getBody();
-
         //Populate list with product/stock/category info
         if(products != null){
-            products.forEach(product -> {
-                int productId = product.getId();
-                Stock stock = getProductStock(productId);
-                Category category = getProductCategory(product.getCategoryId());
-                Image mainProductImage = getProductImages(productId, true).get(0);
-                List<Image> images = getProductImages(productId, false);
-                productInfoList.add(new ProductInfo(product, stock, category, mainProductImage, images));
-            });
+            productInfoList = populateProductInfoList(products);
         }
         return new ProductInfoList(productInfoList);
     }
@@ -266,6 +252,20 @@ public class ProductInfoServiceImpl implements ProductInfoService {
         HttpEntity<Stock> stockEntity = new HttpEntity<>(stock, null);
         ResponseEntity<Stock> stockServiceResponse = restTemplate.exchange(this.stockUrl, HttpMethod.PUT, stockEntity, Stock.class);
         LOGGER.info("Stock-Service Response: Code -- " + stockServiceResponse.getStatusCodeValue() + " | Updated Stock: " + stockServiceResponse.getBody().toString());
+    }
+
+    @Override
+    public List<ProductInfo> populateProductInfoList(List<Product> products) {
+        List<ProductInfo> productInfoList = new ArrayList<>();
+        products.forEach(product -> {
+            int productId = product.getId();
+            Stock stock = getProductStock(productId);
+            Category category = getProductCategory(product.getCategoryId());
+            Image mainProductImage = getProductImages(productId, true).get(0);
+            List<Image> images = getProductImages(productId, false);
+            productInfoList.add(new ProductInfo(product, stock, category, mainProductImage, images));
+        });
+        return productInfoList;
     }
 
 
