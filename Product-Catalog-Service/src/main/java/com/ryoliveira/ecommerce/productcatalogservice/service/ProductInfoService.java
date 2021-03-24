@@ -46,7 +46,11 @@ public interface ProductInfoService {
 
 	ProductInfo mapJsonToProductInfo(String json);
 
-	void updateMainProductImage(MultipartFile mainProductImageFile, int productId);
+	void updateMainProductImage(int productId, MultipartFile mainProductImageFile);
+
+	void updateProduct(Product product);
+
+	void updateStock(Stock stock);
 	
 	
 	
