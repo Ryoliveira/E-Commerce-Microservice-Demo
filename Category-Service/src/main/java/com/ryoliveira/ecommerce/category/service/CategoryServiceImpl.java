@@ -1,81 +1,64 @@
 package com.ryoliveira.ecommerce.category.service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Random;
-
+import com.ryoliveira.ecommerce.category.dao.CategoryRepository;
+import com.ryoliveira.ecommerce.category.exception.CategoryNotFoundException;
+import com.ryoliveira.ecommerce.category.model.Category;
+import com.ryoliveira.ecommerce.category.model.CategoryList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ryoliveira.ecommerce.category.dao.CategoryRepository;
-import com.ryoliveira.ecommerce.category.model.Category;
-import com.ryoliveira.ecommerce.category.model.CategoryList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-	
-	Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
-	
-	@Autowired
-	private CategoryRepository categoryRepo;
 
-	@Override
-	public CategoryList findAll() {
-		List<Category> categoryList = categoryRepo.findAllByOrderByName();
-		return new CategoryList(categoryList);
-	}
+    Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
-	@Override
-	public Category findById(int categoryId) {
-		Category category = new Category();
-		try {
-			Optional<Category> optional = categoryRepo.findById(categoryId);
-			category = optional.orElseThrow(() -> new NoSuchElementException());
-		}catch(NoSuchElementException e) {
-			LOGGER.warn("No Category with id: " + categoryId);
-		}
-		return category;
-	}
+    @Autowired
+    private CategoryRepository categoryRepo;
 
-	@Override
-	public void deleteCategory(int categoryId) {
-		try {
-			Optional<Category> optional = categoryRepo.findById(categoryId);
-			Category category = optional.orElseThrow(() -> new NoSuchElementException());
-			categoryRepo.delete(category);
-		}catch(NoSuchElementException e) {
-			LOGGER.warn("No Category with id: " + categoryId);
-		}
-	}
+    @Override
+    public CategoryList findAll() {
+        List<Category> categoryList = categoryRepo.findAllByOrderByName();
+        return new CategoryList(categoryList);
+    }
 
-	@Override
-	public Category updateCategory(Category updatedCategory) {
-		Category category = new Category();
-		
-		try {
-			Optional<Category> optional = categoryRepo.findById(updatedCategory.getCategoryId());
-			category = optional.orElseThrow(() -> new NoSuchElementException());
-			if(updatedCategory.getName() != null) {
-				category.setName(updatedCategory.getName());
-			}
-			categoryRepo.save(category);
-		}catch(NoSuchElementException e) {
-			LOGGER.warn("No Category with id: " + updatedCategory.getCategoryId());
-		}
-		return category;
-	}
+    @Override
+    public Category findById(int categoryId) {
+        Optional<Category> optional = categoryRepo.findById(categoryId);
+        return optional.orElseThrow(() -> new CategoryNotFoundException("No Category with id: " + categoryId));
+    }
 
-	@Override
-	public Category saveCategory(Category category) {
-		return categoryRepo.save(category);
-	}
+    @Override
+    public void deleteCategory(int categoryId) {
+        Optional<Category> optional = categoryRepo.findById(categoryId);
+        Category category = optional.orElseThrow(() -> new CategoryNotFoundException("No Category with id: " + categoryId));
+        categoryRepo.delete(category);
+    }
 
-	@Override
-	public boolean isCategoryNamePresent(String categoryName) {
-		Optional<String> optionalName = categoryRepo.findByNameIgnoreCase(categoryName);
-		return optionalName.isPresent();
-	}
+    @Override
+    public Category updateCategory(Category updatedCategory) {
+        int categoryId = updatedCategory.getCategoryId();
+        Optional<Category> optional = categoryRepo.findById(categoryId);
+        Category category = optional.orElseThrow(() -> new CategoryNotFoundException("No Category with id: " + categoryId));
+        if (updatedCategory.getName() != null) {
+            category.setName(updatedCategory.getName());
+        }
+
+        return categoryRepo.save(category);
+    }
+
+    @Override
+    public Category saveCategory(Category category) {
+        return categoryRepo.save(category);
+    }
+
+    @Override
+    public boolean isCategoryNamePresent(String categoryName) {
+        Optional<String> optionalName = categoryRepo.findByNameIgnoreCase(categoryName);
+        return optionalName.isPresent();
+    }
 }

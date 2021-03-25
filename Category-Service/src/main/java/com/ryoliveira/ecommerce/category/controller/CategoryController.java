@@ -19,33 +19,33 @@ public class CategoryController {
 	@Autowired
 	private CategoryService categoryService;
 	
-	@PostMapping("/category")
+	@PostMapping(path = "/category")
 	private Category saveCategory(@RequestBody Category category) {
 		return categoryService.saveCategory(category);
 	}
 	
-	@GetMapping("/category/{id}")
+	@GetMapping(path = "/category/{id}")
 	private Category getCategoryById(@PathVariable("id") int categoryId) {
 		return categoryService.findById(categoryId);
 	}
 	
 	
-	@PutMapping("/category")
+	@PutMapping(path = "/category")
 	private Category updateCategory(@RequestBody Category updatedCategory) {
 		return categoryService.updateCategory(updatedCategory);
 	}
 	
-	@DeleteMapping("/category/{id}")
+	@DeleteMapping(path = "/category/{id}")
 	private void deleteCategory(@PathVariable("id") int categoryId) {
 		categoryService.deleteCategory(categoryId);
 	}
 	
-	@GetMapping("/categories")
+	@GetMapping(path = "/categories")
 	private CategoryList getCategories() {
 		return categoryService.findAll();
 	}
 	
-	@GetMapping("/category/name/{categoryName}")
+	@GetMapping(path = "/category/name/{categoryName}")
 	private boolean isCategoryNameInDatabase(@PathVariable("categoryName") String categoryName) {
 		return categoryService.isCategoryNamePresent(categoryName);
 	}
