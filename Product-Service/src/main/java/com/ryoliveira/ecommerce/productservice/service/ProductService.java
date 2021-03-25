@@ -10,7 +10,7 @@ public interface ProductService {
 	
 	Product updateProduct(Product updatedProduct);
 	
-	void removeProduct(int prodId); //TODO determine if removing by id is better than by object reference
+	void removeProduct(int prodId);
 	
 	Product findProductById(int prodId);	
 	
