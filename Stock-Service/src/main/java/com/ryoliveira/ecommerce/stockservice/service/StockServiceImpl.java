@@ -30,8 +30,7 @@ public class StockServiceImpl implements StockService {
 	@Override
 	public Stock findByProductId(int prodId) {
 		Optional<Stock> optional = stockRepo.findById(prodId);
-		Stock stock = null;
-		stock = optional.orElseThrow(() -> new StockNotFoundException("No stock found with product id: " + prodId));
+		Stock stock = optional.orElseThrow(() -> new StockNotFoundException("No stock found with product id: " + prodId));
 		LOGGER.info("Stock Pulled -- " + stock.toString());
 		return stock;
 	}
@@ -39,21 +38,19 @@ public class StockServiceImpl implements StockService {
 	@Override
 	public Stock updateStock(Stock stock) {
 		Optional<Stock> optional = stockRepo.findById(stock.getProductId());
-		Stock originalStock = null;
-		originalStock = optional
+		Stock originalStock = optional
 				.orElseThrow(() -> new StockNotFoundException("No stock found with product id: " + stock.getProductId()));
 		LOGGER.info("Original Stock -- " + originalStock.toString());
 		originalStock.setStock(stock.getStock());
-		stockRepo.save(originalStock);
 		LOGGER.info("Updated Stock -- " + stockRepo.findById(stock.getProductId()).get().toString());
-		return originalStock;
+		return stockRepo.save(originalStock);
 	}
 
 	@Override
 	public void deleteStock(int prodId) throws NoSuchElementException {
 		try {
 			stockRepo.deleteById(prodId);
-			LOGGER.info("Stock Deleted -- ID " + prodId);
+			LOGGER.info("Stock Deleted -- ID: " + prodId);
 		} catch (IllegalArgumentException e) {
 			LOGGER.error(e.getMessage());
 			throw new StockNotFoundException("No stock found with product id: " + prodId);

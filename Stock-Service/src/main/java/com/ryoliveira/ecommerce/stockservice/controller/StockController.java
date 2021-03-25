@@ -20,22 +20,22 @@ public class StockController {
 	@Autowired
 	private StockService stockService;
 
-	@PostMapping("/stock")
+	@PostMapping(path = "/stock")
 	private ResponseEntity<Stock> saveStock(@RequestBody Stock stock) {
 		return new ResponseEntity<>(stockService.saveStock(stock), HttpStatus.OK);
 	}
 
-	@GetMapping("/stock/{prodId}")
+	@GetMapping(path = "/stock/{prodId}")
 	private ResponseEntity<Stock> getStockByProductId(@PathVariable("prodId") int prodId) {
 		return new ResponseEntity<>(stockService.findByProductId(prodId), HttpStatus.OK);
 	}
 
-	@PutMapping("/stock")
+	@PutMapping(path = "/stock")
 	private ResponseEntity<Stock> updateStock(@RequestBody Stock UpdatedStock) {
 		return new ResponseEntity<>(stockService.updateStock(UpdatedStock), HttpStatus.OK);
 	}
 
-	@DeleteMapping("/stock/{prodId}")
+	@DeleteMapping(path = "/stock/{prodId}")
 	private ResponseEntity<String> deleteStock(@PathVariable("prodId") int prodId) {
 		stockService.deleteStock(prodId);
 		return new ResponseEntity<>("Stock deleted with product id: " + prodId, HttpStatus.OK);
