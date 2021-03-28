@@ -4,8 +4,6 @@ import com.ryoliveira.ecommerce.category.dao.CategoryRepository;
 import com.ryoliveira.ecommerce.category.exception.CategoryNotFoundException;
 import com.ryoliveira.ecommerce.category.model.Category;
 import com.ryoliveira.ecommerce.category.model.CategoryList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +12,6 @@ import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-
-    Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     @Autowired
     private CategoryRepository categoryRepo;
@@ -47,7 +43,6 @@ public class CategoryServiceImpl implements CategoryService {
         if (updatedCategory.getName() != null) {
             category.setName(updatedCategory.getName());
         }
-
         return categoryRepo.save(category);
     }
 
