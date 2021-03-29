@@ -3,6 +3,7 @@ package com.ryoliveira.ecommerce.productcatalogservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ryoliveira.ecommerce.productcatalogservice.model.*;
+import com.ryoliveira.ecommerce.productcatalogservice.util.ImageFileConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
-    private ImageService imageService;
+    private ImageFileConverter imageFileConverter;
 
     @Override
     public ProductInfo saveProductInfo(String productInfoJsonString, List<MultipartFile> imageFiles, MultipartFile mainProductImage) {
@@ -129,7 +130,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
         List<Product> products = responseEntity.getBody();
 
         //Populate list with product/stock/category info
-        if(products != null){
+        if (products != null) {
             productInfoList = populateProductInfoList(products);
         }
         return new ProductInfoList(productInfoList);
@@ -150,7 +151,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
                 });
         List<Product> products = responseEntity.getBody();
         //Populate list with product/stock/category info
-        if(products != null){
+        if (products != null) {
             productInfoList = populateProductInfoList(products);
         }
         return new ProductInfoList(productInfoList);
@@ -203,7 +204,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     public List<Image> saveAdditionalImages(int productId, List<MultipartFile> imageFiles) {
         List<Image> savedImages = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
-            Image imgToBeSaved = imageService.createImageObject(productId, imageFile, false);
+            Image imgToBeSaved = imageFileConverter.createImageObject(productId, imageFile, false);
             HttpEntity<Image> httpEntity = new HttpEntity<Image>(imgToBeSaved, null);
             ResponseEntity<Image> imgResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, httpEntity, Image.class);
             Image savedImage = imgResponse.getBody();
@@ -214,7 +215,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Override
     public Image saveMainProductImage(int productId, MultipartFile mainProductImageFile) {
-        Image mainProductImage = imageService.createImageObject(productId, mainProductImageFile, true);
+        Image mainProductImage = imageFileConverter.createImageObject(productId, mainProductImageFile, true);
         HttpEntity<Image> mainImageEntity = new HttpEntity<>(mainProductImage, null);
         ResponseEntity<Image> mainImageSaveResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, mainImageEntity, Image.class);
         return mainImageSaveResponse.getBody();
@@ -234,7 +235,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Override
     public void updateMainProductImage(int productId, MultipartFile mainProductImageFile) {
-        Image updatedImg = imageService.createImageObject(productId, mainProductImageFile, true);
+        Image updatedImg = imageFileConverter.createImageObject(productId, mainProductImageFile, true);
         HttpEntity<Image> imageEntity = new HttpEntity<>(updatedImg, null);
         ResponseEntity<Image> imageServiceResponse = restTemplate.exchange(this.imageUrl + "/" + productId, HttpMethod.PUT, imageEntity, Image.class);
         LOGGER.info("Image-Service Response: Code -- " + imageServiceResponse.getStatusCodeValue() + " | Updated Image: File Name --" + imageServiceResponse.getBody().getFileName() + " | File Type: " + imageServiceResponse.getBody().getFileType());

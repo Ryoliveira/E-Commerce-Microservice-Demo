@@ -1,4 +1,4 @@
-package com.ryoliveira.ecommerce.productcatalogservice.service;
+package com.ryoliveira.ecommerce.productcatalogservice.util;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -9,9 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ryoliveira.ecommerce.productcatalogservice.model.Image;
 
 @Service
-public class ImageServiceImpl implements ImageService {
+public class ImageFileConverter {
 
-	@Override
 	public Image createImageObject(int productId, MultipartFile imageFile, boolean isProductMainImage) {
 		Image img = null;
 		try {
