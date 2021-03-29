@@ -39,12 +39,10 @@ public interface ProductInfoService {
 	Product saveProduct(Product product);
 	
 	Stock saveStock(int productId, Stock stock);
-	
+
 	List<Image> saveAdditionalImages(int productId, List<MultipartFile> imageFiles);
 
 	Image saveMainProductImage(int productId, MultipartFile mainProductImageFile);
-
-	ProductInfo mapJsonToProductInfo(String json);
 
 	void updateMainProductImage(int productId, MultipartFile mainProductImageFile);
 

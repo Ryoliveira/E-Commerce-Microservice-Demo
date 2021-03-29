@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ryoliveira.ecommerce.productcatalogservice.model.*;
 import com.ryoliveira.ecommerce.productcatalogservice.util.ImageFileConverter;
+import com.ryoliveira.ecommerce.productcatalogservice.util.ProductInfoObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,12 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     private RestTemplate restTemplate;
     @Autowired
     private ImageFileConverter imageFileConverter;
+    @Autowired
+    private ProductInfoObjectMapper productInfoObjectMapper;
 
     @Override
     public ProductInfo saveProductInfo(String productInfoJsonString, List<MultipartFile> imageFiles, MultipartFile mainProductImage) {
-        ProductInfo productInfo = mapJsonToProductInfo(productInfoJsonString);
+        ProductInfo productInfo = productInfoObjectMapper.mapToProductInfoObject(productInfoJsonString);
         Product product = saveProduct(productInfo.getProduct());
         Stock stock = saveStock(product.getId(), productInfo.getStock());
         Category category = getProductCategory(product.getCategoryId());
@@ -62,7 +65,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Override
     public ProductInfo updateProductInfo(String updatedProdInfoJsonString, MultipartFile mainProductImageFile, List<MultipartFile> additionalProductImageFiles) throws NoSuchElementException {
-        ProductInfo productInfo = mapJsonToProductInfo(updatedProdInfoJsonString);
+        ProductInfo productInfo = productInfoObjectMapper.mapToProductInfoObject(updatedProdInfoJsonString);
         int productId = productInfo.getProduct().getId();
         try {
             updateProduct(productInfo.getProduct());
@@ -221,17 +224,6 @@ public class ProductInfoServiceImpl implements ProductInfoService {
         return mainImageSaveResponse.getBody();
     }
 
-    @Override
-    public ProductInfo mapJsonToProductInfo(String json) {
-        ProductInfo productInfo = null;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            productInfo = mapper.readValue(json, ProductInfo.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return productInfo;
-    }
 
     @Override
     public void updateMainProductImage(int productId, MultipartFile mainProductImageFile) {
