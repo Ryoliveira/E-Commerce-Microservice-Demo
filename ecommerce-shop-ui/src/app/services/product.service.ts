@@ -73,6 +73,13 @@ export class ProductService {
     );
   }
 
+  getProductsBySearchQuery(searchQuery: string) {
+    let productsBySearchQueryUrl = `${this.productListUrl}/search/${searchQuery}`;
+    return this.httpClient.get<ProductListResponse>(productsBySearchQueryUrl).pipe(
+      map(reponse => reponse.productInfoList)
+    );
+  }
+
   sanitizeUrl(img : Image) : SafeUrl {
     return this.domSanitizer.bypassSecurityTrustUrl(`data:${img.fileType};base64, ${img.image}`);
   }

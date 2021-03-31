@@ -1,0 +1,2 @@
+<input #searchQuery type="text" placeholder="Search for products" (keyup.enter)="doSearch(searchQuery.value)">
+<button (click)="doSearch(searchQuery.value)" class="btn btn-info">Search</button>

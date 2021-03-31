@@ -22,7 +22,11 @@ export class ProductListComponent implements OnInit {
   ngOnInit(): void {
     if(this.activeRoute.snapshot.paramMap.get("categoryId")){
       this.listProductsByCategory();
-    }else{
+    }
+    else if(this.activeRoute.snapshot.paramMap.get("searchQuery")){
+      this.listProductsBySearchQuery();
+    }
+    else{
       this.listProducts();
     }
   }
@@ -41,6 +45,15 @@ export class ProductListComponent implements OnInit {
         this.productInfoList = data;
       }
     )
+  }
+
+  listProductsBySearchQuery(){
+    let searchQuery = this.activeRoute.snapshot.paramMap.get("searchQuery");
+    this.productService.getProductsBySearchQuery(searchQuery).subscribe(
+      data => {
+        this.productInfoList = data;
+      }
+    );
   }
 
   deleteProduct(productId : Number){

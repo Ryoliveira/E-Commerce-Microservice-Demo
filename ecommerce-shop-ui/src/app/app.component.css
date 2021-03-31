@@ -1,0 +1,8 @@
+.navbar {
+    height: 25px;
+    padding-bottom: 10px;
+
+}
+.navbar  div{
+    float: left;
+}

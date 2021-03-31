@@ -14,6 +14,7 @@ import { HomepageComponent } from './components/homepage/homepage.component';
 import { ProductViewComponent } from './components/product-view/product-view.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { CategoryFormComponent } from './components/category-form/category-form.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
 
 const routes: Routes = [
   {path: 'home', component: HomepageComponent},
@@ -21,6 +22,7 @@ const routes: Routes = [
   {path: 'update-product/:id', component: ProductFormComponent},
   {path: 'add-product', component: ProductFormComponent},
   {path: 'add-category', component: CategoryFormComponent},
+  {path: 'products/search/:searchQuery', component: ProductListComponent},
   {path: 'products/:categoryId', component: ProductListComponent},
   {path: 'products', component: ProductListComponent},
   {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -37,7 +39,8 @@ const routes: Routes = [
     HomepageComponent,
     ProductViewComponent,
     SidebarComponent,
-    CategoryFormComponent
+    CategoryFormComponent,
+    SearchBarComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
