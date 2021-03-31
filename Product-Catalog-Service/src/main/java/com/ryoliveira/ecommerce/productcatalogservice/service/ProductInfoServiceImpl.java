@@ -32,6 +32,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     private final String productUrl = String.format("http://%s/product", PRODUCT_SERVICE);
     private final String allProductsUrl = String.format("http://%s/products", PRODUCT_SERVICE);
+    private final String allProductsContainingNameUrl = String.format("http://%s/products/search", PRODUCT_SERVICE);
     private final String stockUrl = String.format("http://%s/stock", STOCK_SERVICE);
     private final String categoryUrl = String.format("http://%s/category", CATEGORY_SERVICE);
     private final String allCategoriesUrl = String.format("http://%s/categories", CATEGORY_SERVICE);
@@ -158,6 +159,14 @@ public class ProductInfoServiceImpl implements ProductInfoService {
             productInfoList = populateProductInfoList(products);
         }
         return new ProductInfoList(productInfoList);
+    }
+
+    @Override
+    public ProductInfoList getAllProductsContainingName(String name) {
+        ResponseEntity<List<Product>> responseEntity = restTemplate.exchange(this.allProductsContainingNameUrl + "/" + name, HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>(){
+        });
+        List<Product> products = responseEntity.getBody();
+        return (products != null) ? new ProductInfoList(populateProductInfoList(products)) : new ProductInfoList(new ArrayList<>());
     }
 
 

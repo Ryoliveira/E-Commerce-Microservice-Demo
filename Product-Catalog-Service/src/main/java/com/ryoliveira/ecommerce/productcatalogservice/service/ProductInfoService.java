@@ -35,6 +35,8 @@ public interface ProductInfoService {
 	CategoryList getAllCategories();
 	
 	ProductInfoList getAllProductsByCategoryId(int categoryId);
+
+	ProductInfoList getAllProductsContainingName(String name);
 	
 	Product saveProduct(Product product);
 	
