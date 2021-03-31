@@ -46,4 +46,9 @@ public class ProductController {
     private List<Product> getAllProductsByCategoryId(@PathVariable("categoryId") int categoryId) {
         return prodService.findAllByCategoryId(categoryId);
     }
+
+    @GetMapping(path = "/products/search/{name}")
+    private ResponseEntity<List<Product>> getProductsThatContainSearchQuery(@PathVariable("name") String name){
+        return new ResponseEntity<>(prodService.findAllByNameContaining(name), HttpStatus.OK);
+    }
 }
