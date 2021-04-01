@@ -38,13 +38,13 @@ public class ProductController {
     }
 
     @GetMapping(path = "/products")
-    private List<Product> getAllProducts() {
-        return prodService.findAll();
+    private ResponseEntity<List<Product>> getAllProducts() {
+        return new ResponseEntity<>(prodService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/products/{categoryId}")
-    private List<Product> getAllProductsByCategoryId(@PathVariable("categoryId") int categoryId) {
-        return prodService.findAllByCategoryId(categoryId);
+    private ResponseEntity<List<Product>> getAllProductsByCategoryId(@PathVariable("categoryId") int categoryId) {
+        return new ResponseEntity<>(prodService.findAllByCategoryId(categoryId), HttpStatus.OK);
     }
 
     @GetMapping(path = "/products/search/{name}")
