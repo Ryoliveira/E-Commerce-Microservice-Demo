@@ -18,6 +18,6 @@ public interface ProductService {
 	
 	List<Product> findAllByCategoryId(int categoryId);
 
-	List<Product> findAllByNameContaining(String name);
+	List<Product> findAllByNameContaining(String name, int searchCategoryId);
 	
 }

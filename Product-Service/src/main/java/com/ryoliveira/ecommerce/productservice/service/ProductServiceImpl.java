@@ -74,8 +74,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllByNameContaining(String name) {
-        return prodRepo.findAllByNameContaining(name);
+    public List<Product> findAllByNameContaining(String name, int searchCategoryId) {
+        LOGGER.info(String.format("Name: %s || CategoryId: %d", name, searchCategoryId));
+        return (searchCategoryId == 0) ? prodRepo.findAllByNameContaining(name) : prodRepo.findAllByNameContainingAndCategoryId(name, searchCategoryId);
     }
 
 }
