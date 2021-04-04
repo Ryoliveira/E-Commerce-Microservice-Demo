@@ -59,7 +59,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
         //Save main image
         Image mainImage = saveMainProductImage(productId, mainProductImage);
         //save additional images
-        List<Image> productImages = saveAdditionalImages(productId, imageFiles);
+        List<Image> productImages = (imageFiles != null) ? saveAdditionalImages(productId, imageFiles) : new ArrayList<>();
 
         return new ProductInfo(product, stock, category, mainImage, productImages);
     }
@@ -162,8 +162,12 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     }
 
     @Override
-    public ProductInfoList getAllProductsContainingName(String name) {
-        ResponseEntity<List<Product>> responseEntity = restTemplate.exchange(this.allProductsContainingNameUrl + "/" + name, HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>(){
+    public ProductInfoList getAllProductsContainingName(String name, int searchCategoryId) {
+        String builtUrl = UriComponentsBuilder.fromHttpUrl(this.allProductsContainingNameUrl)
+                                                .pathSegment(name)
+                                                .queryParam("searchCategoryId", searchCategoryId)
+                                                .toUriString();
+        ResponseEntity<List<Product>> responseEntity = restTemplate.exchange(builtUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>(){
         });
         List<Product> products = responseEntity.getBody();
         return (products != null) ? new ProductInfoList(populateProductInfoList(products)) : new ProductInfoList(new ArrayList<>());
