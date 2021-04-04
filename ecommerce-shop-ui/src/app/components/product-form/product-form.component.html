@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <form [formGroup]="productInfoFormGroup" (ngSubmit)=submitProduct()>
+    <form #productForm [formGroup]="productInfoFormGroup" (ngSubmit)=submitProduct()>
         <!--Product Info Form Group-->
         <div formGroupName="product" class="form-area">
             <h3>Product</h3>
@@ -79,7 +79,7 @@
         <div class="text-center">
             <button routerLink="/products" class="btn btn-danger">Cancel</button>
             &nbsp;
-            <button type="submit" class="btn btn-info">Save</button>
+            <button type="submit" class="btn btn-info" (keyup.enter)="submitProduct()">Save</button>
         </div>
     </form>
 </div>

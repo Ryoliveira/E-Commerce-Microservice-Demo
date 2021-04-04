@@ -99,6 +99,7 @@ createUpdateForm() : void {
 }
 
 submitProduct() : void {
+
   let product : Product = this.productInfoFormGroup.controls["product"].value;
   let stock : Stock = this.productInfoFormGroup.controls["stock"].value;
   let category : Category = this.productInfoFormGroup.controls["category"].value;
@@ -113,6 +114,10 @@ submitProduct() : void {
 
   // if product id null, new product is attempting to be saved
   if(productInfo.product.id == null){
+    if(this.mainProductImageFile == null){
+      alert("Main product image may not be empty, please select a photo");
+      return;
+    }
     this.productService.saveProduct(productInfo, this.mainProductImageFile, this.additionalImageFiles).subscribe(() => {
       this.redirectToProductsPage();
     });

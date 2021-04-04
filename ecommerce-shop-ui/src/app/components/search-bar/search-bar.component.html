@@ -1,2 +1,6 @@
-<input #searchQuery type="text" placeholder="Search for products" (keyup.enter)="doSearch(searchQuery.value)">
-<button (click)="doSearch(searchQuery.value)" class="btn btn-info">Search</button>
+<input #searchQuery type="text" placeholder="Search for products" (keyup.enter)="doSearch(searchQuery.value, categoryQuery.value)">
+<select #categoryQuery>
+    <option [value]=0>Any</option>
+    <option *ngFor="let category of categoryList" [value]="category.categoryId">{{category.name}}</option>
+</select>
+<button (click)="doSearch(searchQuery.value,  categoryQuery.value)" class="btn btn-info">Search</button>

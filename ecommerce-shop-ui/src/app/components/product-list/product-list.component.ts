@@ -49,7 +49,8 @@ export class ProductListComponent implements OnInit {
 
   listProductsBySearchQuery(){
     let searchQuery = this.activeRoute.snapshot.paramMap.get("searchQuery");
-    this.productService.getProductsBySearchQuery(searchQuery).subscribe(
+    let searchCategoryId = this.activeRoute.snapshot.paramMap.get("searchCategoryId");
+    this.productService.getProductsBySearchQuery(searchQuery, searchCategoryId).subscribe(
       data => {
         this.productInfoList = data;
       }

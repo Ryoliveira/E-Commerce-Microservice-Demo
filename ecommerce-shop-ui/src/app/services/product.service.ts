@@ -73,9 +73,10 @@ export class ProductService {
     );
   }
 
-  getProductsBySearchQuery(searchQuery: string) {
+  getProductsBySearchQuery(searchQuery: string, searchCategoryId: string) {
+    let params = {"searchCategoryId" : searchCategoryId};
     let productsBySearchQueryUrl = `${this.productListUrl}/search/${searchQuery}`;
-    return this.httpClient.get<ProductListResponse>(productsBySearchQueryUrl).pipe(
+    return this.httpClient.get<ProductListResponse>(productsBySearchQueryUrl, {params : params}).pipe(
       map(reponse => reponse.productInfoList)
     );
   }

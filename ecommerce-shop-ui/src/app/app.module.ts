@@ -22,7 +22,7 @@ const routes: Routes = [
   {path: 'update-product/:id', component: ProductFormComponent},
   {path: 'add-product', component: ProductFormComponent},
   {path: 'add-category', component: CategoryFormComponent},
-  {path: 'products/search/:searchQuery', component: ProductListComponent},
+  {path: 'products/search/:searchCategoryId/:searchQuery', component: ProductListComponent},
   {path: 'products/:categoryId', component: ProductListComponent},
   {path: 'products', component: ProductListComponent},
   {path: '', redirectTo: '/home', pathMatch: 'full'},
