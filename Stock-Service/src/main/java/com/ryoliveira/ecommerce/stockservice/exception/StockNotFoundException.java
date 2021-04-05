@@ -6,12 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class StockNotFoundException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
-	
-	
-	public StockNotFoundException(String msg) {
-		super(msg);
-	}
-	
+    private static final long serialVersionUID = 1L;
+
+    public StockNotFoundException(String msg) {
+        super(msg);
+    }
 
 }
