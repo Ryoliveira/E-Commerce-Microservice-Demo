@@ -57,7 +57,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
         int productId = product.getId();
 
         //Save main image
-        Image mainImage = saveMainProductImage(productId, mainProductImage);
+        Image mainImage = (mainProductImage != null) ? saveMainProductImage(productId, mainProductImage) : saveMainProductImage(productId, null);
         //save additional images
         List<Image> productImages = (imageFiles != null) ? saveAdditionalImages(productId, imageFiles) : new ArrayList<>();
 
@@ -231,7 +231,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Override
     public Image saveMainProductImage(int productId, MultipartFile mainProductImageFile) {
-        Image mainProductImage = imageFileConverter.createImageObject(productId, mainProductImageFile, true);
+        Image mainProductImage = (mainProductImageFile != null) ? imageFileConverter.createImageObject(productId, mainProductImageFile, true) : new Image();
         HttpEntity<Image> mainImageEntity = new HttpEntity<>(mainProductImage, null);
         ResponseEntity<Image> mainImageSaveResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, mainImageEntity, Image.class);
         return mainImageSaveResponse.getBody();
