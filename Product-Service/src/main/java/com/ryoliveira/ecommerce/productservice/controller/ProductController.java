@@ -49,7 +49,7 @@ public class ProductController {
 
     @GetMapping(path = "/products/search/{name}")
     private ResponseEntity<List<Product>> getProductsThatContainSearchQuery(@PathVariable("name") String name,
-                                                                            @RequestParam("searchCategoryId") int searchCategoryId){
+                                                                            @RequestParam("searchCategoryId") int searchCategoryId) {
         return new ResponseEntity<>(prodService.findAllByNameContaining(name, searchCategoryId), HttpStatus.OK);
     }
 }
