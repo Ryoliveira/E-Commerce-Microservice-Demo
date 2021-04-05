@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class Stock {
-	
-	private int productId;
-	private int stock;
+
+    private int productId;
+    private int stock;
 
 }
 

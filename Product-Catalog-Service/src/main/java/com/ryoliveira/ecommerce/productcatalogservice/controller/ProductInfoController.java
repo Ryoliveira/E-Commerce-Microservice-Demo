@@ -4,8 +4,6 @@ import com.ryoliveira.ecommerce.productcatalogservice.model.CategoryList;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfo;
 import com.ryoliveira.ecommerce.productcatalogservice.model.ProductInfoList;
 import com.ryoliveira.ecommerce.productcatalogservice.service.ProductInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -64,7 +62,7 @@ public class ProductInfoController {
 
     @GetMapping(path = "/products/search/{name}")
     private ResponseEntity<ProductInfoList> getAllProductsWithNameContaining(@PathVariable("name") String name,
-																			 @RequestParam("searchCategoryId") int searchCategoryId) {
+                                                                             @RequestParam("searchCategoryId") int searchCategoryId) {
         return new ResponseEntity<>(prodInfoService.getAllProductsContainingName(name, searchCategoryId), HttpStatus.OK);
     }
 

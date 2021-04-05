@@ -1,7 +1,5 @@
 package com.ryoliveira.ecommerce.productcatalogservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ryoliveira.ecommerce.productcatalogservice.model.*;
 import com.ryoliveira.ecommerce.productcatalogservice.util.ImageFileConverter;
 import com.ryoliveira.ecommerce.productcatalogservice.util.ProductInfoObjectMapper;
@@ -164,10 +162,10 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     @Override
     public ProductInfoList getAllProductsContainingName(String name, int searchCategoryId) {
         String builtUrl = UriComponentsBuilder.fromHttpUrl(this.allProductsContainingNameUrl)
-                                                .pathSegment(name)
-                                                .queryParam("searchCategoryId", searchCategoryId)
-                                                .toUriString();
-        ResponseEntity<List<Product>> responseEntity = restTemplate.exchange(builtUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>(){
+                .pathSegment(name)
+                .queryParam("searchCategoryId", searchCategoryId)
+                .toUriString();
+        ResponseEntity<List<Product>> responseEntity = restTemplate.exchange(builtUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>() {
         });
         List<Product> products = responseEntity.getBody();
         return (products != null) ? new ProductInfoList(populateProductInfoList(products)) : new ProductInfoList(new ArrayList<>());

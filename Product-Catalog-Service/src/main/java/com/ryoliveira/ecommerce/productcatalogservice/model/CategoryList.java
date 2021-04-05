@@ -1,12 +1,12 @@
 package com.ryoliveira.ecommerce.productcatalogservice.model;
 
-import java.util.List;
-
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CategoryList {
-	
-	List<Category> categoryList;
+
+    List<Category> categoryList;
 
 }
