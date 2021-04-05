@@ -2,8 +2,6 @@ package com.ryoliveira.ecommerce.image.controller;
 
 import com.ryoliveira.ecommerce.image.model.Image;
 import com.ryoliveira.ecommerce.image.service.ImageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +50,7 @@ public class ImageController {
     @PutMapping(path = "/images")
     private ResponseEntity<String> deleteImagesById(@RequestBody List<Integer> imageIdsToDelete) {
         imageService.deleteImagesByIds(imageIdsToDelete);
-        return new ResponseEntity<String>("", HttpStatus.OK);
+        return new ResponseEntity<String>("Deleted images with ids: " + imageIdsToDelete.toString(), HttpStatus.OK);
     }
 
 }
