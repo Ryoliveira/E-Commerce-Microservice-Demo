@@ -15,14 +15,13 @@ public class CategoryServiceExceptionHandler extends ResponseEntityExceptionHand
     private final String INCORRECT_REQUEST = "INCORRECT_REQUEST";
 
     @ExceptionHandler(CategoryNotFoundException.class)
-    private ResponseEntity<ErrorResponse> handleNoCategoryFoundException(CategoryNotFoundException ex, WebRequest request){
+    private ResponseEntity<ErrorResponse> handleNoCategoryFoundException(CategoryNotFoundException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         ErrorResponse errorResponse = new ErrorResponse(INCORRECT_REQUEST, details);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
 
     }
-
 
 
 }
