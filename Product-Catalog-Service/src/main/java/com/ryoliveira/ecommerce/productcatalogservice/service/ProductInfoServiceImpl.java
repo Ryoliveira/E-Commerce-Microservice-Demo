@@ -172,13 +172,12 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     }
 
 
-    @Override
-    public Product getProduct(int prodId) {
+    private Product getProduct(int prodId) {
         return restTemplate.getForObject(this.productUrl + "/" + prodId, Product.class);
     }
 
-    @Override
-    public Stock getProductStock(int prodId) {
+
+    private Stock getProductStock(int prodId) {
         String productStockUrl = this.stockUrl + "/" + prodId;
         ResponseEntity<Stock> response = restTemplate.getForEntity(productStockUrl, Stock.class);
         LOGGER.info("Stock retrieval code: " + response.getStatusCode());
@@ -186,36 +185,35 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     }
 
 
-    @Override
-    public Category getProductCategory(int categoryId) {
+    private Category getProductCategory(int categoryId) {
         return restTemplate.getForObject(this.categoryUrl + "/" + categoryId, Category.class);
     }
 
-    @Override
-    public List<Image> getProductImages(int prodId, boolean productMainImageOnly) {
+
+    private List<Image> getProductImages(int prodId, boolean productMainImageOnly) {
         String url = UriComponentsBuilder.fromHttpUrl(this.allProductImagesUrl + "/" + prodId).queryParam("productMainImageOnly", productMainImageOnly).toUriString();
         ResponseEntity<List<Image>> response = restTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Image>>() {
         });
         return response.getBody();
     }
 
-    @Override
-    public Product saveProduct(Product product) {
+
+    private Product saveProduct(Product product) {
         ResponseEntity<Product> response = restTemplate.postForEntity(this.productUrl, product, Product.class);
         LOGGER.info("Saved Product status code: " + response.getStatusCodeValue());
         return response.getBody();
     }
 
-    @Override
-    public Stock saveStock(int productId, Stock stock) {
+
+    private Stock saveStock(int productId, Stock stock) {
         stock.setProductId(productId);
         ResponseEntity<Stock> response = restTemplate.postForEntity(this.stockUrl, stock, Stock.class);
         LOGGER.info("Saved Stock status code: " + response.getStatusCodeValue());
         return response.getBody();
     }
 
-    @Override
-    public List<Image> saveAdditionalImages(int productId, List<MultipartFile> imageFiles) {
+
+    private List<Image> saveAdditionalImages(int productId, List<MultipartFile> imageFiles) {
         List<Image> savedImages = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
             Image imgToBeSaved = imageFileConverter.createImageObject(productId, imageFile, false);
@@ -227,8 +225,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
         return savedImages;
     }
 
-    @Override
-    public Image saveMainProductImage(int productId, MultipartFile mainProductImageFile) {
+
+    private Image saveMainProductImage(int productId, MultipartFile mainProductImageFile) {
         Image mainProductImage = (mainProductImageFile != null) ? imageFileConverter.createImageObject(productId, mainProductImageFile, true) : new Image();
         HttpEntity<Image> mainImageEntity = new HttpEntity<>(mainProductImage, null);
         ResponseEntity<Image> mainImageSaveResponse = restTemplate.exchange(this.imageUrl, HttpMethod.POST, mainImageEntity, Image.class);
@@ -236,30 +234,30 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     }
 
 
-    @Override
-    public void updateMainProductImage(int productId, MultipartFile mainProductImageFile) {
+
+    private void updateMainProductImage(int productId, MultipartFile mainProductImageFile) {
         Image updatedImg = imageFileConverter.createImageObject(productId, mainProductImageFile, true);
         HttpEntity<Image> imageEntity = new HttpEntity<>(updatedImg, null);
         ResponseEntity<Image> imageServiceResponse = restTemplate.exchange(this.imageUrl + "/" + productId, HttpMethod.PUT, imageEntity, Image.class);
         LOGGER.info("Image-Service Response: Code -- " + imageServiceResponse.getStatusCodeValue() + " | Updated Image: File Name --" + imageServiceResponse.getBody().getFileName() + " | File Type: " + imageServiceResponse.getBody().getFileType());
     }
 
-    @Override
-    public void updateProduct(Product product) {
+
+    private void updateProduct(Product product) {
         HttpEntity<Product> productEntity = new HttpEntity<>(product, null);
         ResponseEntity<Product> productServiceResponse = restTemplate.exchange(this.productUrl, HttpMethod.PUT, productEntity, Product.class);
         LOGGER.info("Product-Service Response: Code -- " + productServiceResponse.getStatusCodeValue() + " | Updated Product: " + productServiceResponse.getBody().toString());
     }
 
-    @Override
-    public void updateStock(Stock stock) {
+
+    private void updateStock(Stock stock) {
         HttpEntity<Stock> stockEntity = new HttpEntity<>(stock, null);
         ResponseEntity<Stock> stockServiceResponse = restTemplate.exchange(this.stockUrl, HttpMethod.PUT, stockEntity, Stock.class);
         LOGGER.info("Stock-Service Response: Code -- " + stockServiceResponse.getStatusCodeValue() + " | Updated Stock: " + stockServiceResponse.getBody().toString());
     }
 
-    @Override
-    public List<ProductInfo> populateProductInfoList(List<Product> products) {
+
+    private List<ProductInfo> populateProductInfoList(List<Product> products) {
         List<ProductInfo> productInfoList = new ArrayList<>();
         products.forEach(product -> {
             int productId = product.getId();

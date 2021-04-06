@@ -15,14 +15,6 @@ public interface ProductInfoService {
 
     ProductInfo getProductInfo(int prodId);
 
-    Product getProduct(int prodId);
-
-    Stock getProductStock(int prodId);
-
-    Category getProductCategory(int categoryId);
-
-    List<Image> getProductImages(int prodId, boolean productMainImageOnly);
-
     ProductInfoList getAllProducts();
 
     CategoryList getAllCategories();
@@ -31,21 +23,6 @@ public interface ProductInfoService {
 
     ProductInfoList getAllProductsContainingName(String name, int categoryId);
 
-    Product saveProduct(Product product);
-
-    Stock saveStock(int productId, Stock stock);
-
-    List<Image> saveAdditionalImages(int productId, List<MultipartFile> imageFiles);
-
-    Image saveMainProductImage(int productId, MultipartFile mainProductImageFile);
-
-    void updateMainProductImage(int productId, MultipartFile mainProductImageFile);
-
-    void updateProduct(Product product);
-
-    void updateStock(Stock stock);
-
-    List<ProductInfo> populateProductInfoList(List<Product> products);
 
 
 }
